@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>jQuery.gridform by gunnar-t</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>jQuery.gridform</h1>
+        <p>jQuery-Plugin for creating complex forms (table-based) with usage of bootstrap and (optional) Font-Awesome.</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/gunnar-t/jquery.gridform" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/gunnar-t/jquery.gridform/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/gunnar-t/jquery.gridform/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h1>
+<a name="jquerygridform" class="anchor" href="#jquerygridform"><span class="octicon octicon-link"></span></a>jquery.gridform</h1>
+
+<p>jQuery-Plugin for creating complex forms (table-based) with usage of bootstrap and (optional) Font-Awesome.</p>
+
+<h2>
+<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>Why a new plugin for building html forms? Because I was tired of building (complex) forms by hand and needed
+some lib for my projects that could handle the following:</p>
+
+<ul>
+<li>Display a bunch of form elements in a (sometimes) complex grid</li>
+<li>Have an "edit" and a "view" mode</li>
+<li>Simple add validation or other event handler on form elements</li>
+<li>Use the excellent bootstrap design and optional font awesome for "nicer" form ui</li>
+<li>Have the ability to use elements spanning over some rows of the grid (rowspan and colspan)</li>
+</ul><p>Since I did not find a library doing all that in a kindly manner: I did it myself :)
+The code was done in three days in my sparetime, so I am sorry for all the mess and all the bugs that are still in there.</p>
+
+<h2>
+<a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>Example</h2>
+
+<p>This is how a form could look like.
+EXAMPLE IMAGE</p>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>Download the project and add the following files to your HTML page or start with the <strong>test.html</strong> from the source.
+Of course you can use all the third party stuff from CDNs, if you like.
+If you want that, then you probably know what to do by yourself :)</p>
+
+<div class="highlight highlight-html"><pre><span class="c">&lt;!-- Design stuff --&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span> <span class="na">href=</span><span class="s">"css/reset.css"</span><span class="nt">&gt;</span><span class="c">&lt;!-- optional: for reseting browser defaults --&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span> <span class="na">href=</span><span class="s">"css/bootstrap.min.css"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span> <span class="na">href=</span><span class="s">"css/jquery.gridform.css"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span> <span class="na">href=</span><span class="s">"css/font-awesome.css"</span><span class="nt">&gt;</span><span class="c">&lt;!-- optional: for nicer checboxes and stuff --&gt;</span>
+<span class="c">&lt;!-- JS-Libs (best to include at the END ofr your HTML file !!--&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"js/jquery.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"js/bootstrap.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"js/jquery.gridform.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</pre></div>
+
+<h2>
+<a name="credits" class="anchor" href="#credits"><span class="octicon octicon-link"></span></a>Credits</h2>
+
+<p>Thanks to the excellent work of </p>
+
+<ul>
+<li><a href="http://jquery.com/">jQuery</a></li>
+<li><a href="http://getbootstrap.com/">Bootstrap twitter</a></li>
+<li><a href="http://fortawesome.github.io/Font-Awesome/">Font Awesome</a></li>
+</ul>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/gunnar-t">gunnar-t</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
