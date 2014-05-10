@@ -25,15 +25,15 @@ EXAMPLE IMAGE
 
 ## Usage
 
-Just add the following files to your HTML page or start with the test.html from the source.
+Download the project and add the following files to your HTML page or start with the **test.html** from the source.
 Of course you can use all the third party stuff from CDNs, if you like.
 If you want that, then you probably know what to do by yourself :)
 
 ```html
 <!-- Design stuff -->
+<link rel="stylesheet" type="text/css" href="css/reset.css"><!-- optional: for reseting browser defaults -->
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.gridform.css">
-<link rel="stylesheet" type="text/css" href="css/reset.css"><!-- optional: for reseting browser defaults -->
 <link rel="stylesheet" type="text/css" href="css/font-awesome.css"><!-- optional: for nicer checboxes and stuff -->
 <!-- JS-Libs (best to include at the END ofr your HTML file !!-->
 <script src="js/jquery.min.js"></script>
