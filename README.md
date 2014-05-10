@@ -42,3 +42,14 @@ If you want that, then you probably know what to do by yourself :)
 ```
 
 
+## Credits
+
+Thanks to the excellent work of 
+ * [jQuery](http://jquery.com/)
+ * [Bootstrap twitter](http://getbootstrap.com/)
+ * [Font Awesome](http://fortawesome.github.io/Font-Awesome/)
+
+ 
+
+
+
