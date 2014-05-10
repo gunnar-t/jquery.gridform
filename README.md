@@ -25,10 +25,20 @@ EXAMPLE IMAGE
 
 ## Usage
 
-Just add the following libraries to your HTML page or start with the test.html from the source.
+Just add the following files to your HTML page or start with the test.html from the source.
+Of course you can use all the third party stuff from CDNs, if you like.
+If you want that, then you probably know what to do by yourself :)
 
 ```html
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-<script src="bootstrap.min.js"></script>
-<script src="jquery.gridform.js"></script>
+<!-- Design stuff -->
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/jquery.gridform.css">
+<link rel="stylesheet" type="text/css" href="css/reset.css"><!-- optional: for reseting browser defaults -->
+<link rel="stylesheet" type="text/css" href="css/font-awesome.css"><!-- optional: for nicer checboxes and stuff -->
+<!-- JS-Libs (best to include at the END ofr your HTML file !!-->
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/jquery.gridform.js"></script>
 ```
+
+
