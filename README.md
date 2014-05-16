@@ -17,30 +17,9 @@ some lib for my projects that could handle the following:
 Since I did not find a library doing all that in a kindly manner: I did it myself :)
 The code was done in three days in my sparetime, so I am sorry for all the mess and all the bugs that are still in there.
 
-## Usage
+...
 
-Download the project and add the following files to your HTML page or start with the **test.html** from the source.
-Of course you can use all the third party stuff from CDNs, if you like.
-If you want that, then you probably know what to do by yourself :)
-
-```html
-<!-- Design stuff -->
-<link rel="stylesheet" type="text/css" href="css/reset.css"><!-- optional: for reseting browser defaults -->
-<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="css/jquery.gridform.css">
-<link rel="stylesheet" type="text/css" href="css/font-awesome.css"><!-- optional: for nicer checboxes and stuff -->
-<!-- JS-Libs (best to include at the END of your HTML file !!-->
-<script src="js/jquery.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/jquery.gridform.js"></script>
-```
-
-## Credits
-
-Thanks to the excellent work of 
- * [jQuery](http://jquery.com/)
- * [Bootstrap twitter](http://getbootstrap.com/)
- * [Font Awesome](http://fortawesome.github.io/Font-Awesome/)
+## [Demo, API, etc. at the github page](http://gunnar-t.github.io/jquery.gridform/index.html)
 
  
 
