@@ -42,6 +42,8 @@ var gridform = gridform || {};
 					labelAlign : 'right',
 					//directly show error tooltips
 					showTooltipInstantly : false,
+                    //where to show the tooltips
+                    tooltipOrientation: "bottom",
 					//success should not be shown by green color (if you do not want a rainbow coloured form :))
 					successIsGreen : false,
 					//use font-awesome for checkboxes and radio-buttons
@@ -974,7 +976,7 @@ var gridform = gridform || {};
 				//set error text
 				$(cellSelectorContent).find("div.form-group")
 				.attr("data-toggle", "tooltip")
-				.attr("data-placement", "right")
+				.attr("data-placement", parent.settings.tooltipOrientation)
 				.attr("title", error);
 				if (parent.settings.showTooltipInstantly === true) {
 					$(cellSelectorContent).find("div.form-group").tooltip("show");
@@ -999,7 +1001,7 @@ var gridform = gridform || {};
 			if (typeof $.fn.tooltip === "function") {
 				$(cellSelectorContent).find("div.form-group")
 				.attr("data-toggle", "tooltip")
-				.attr("data-placement", "right")
+				.attr("data-placement", parent.settings.tooltipOrientation)
 				.attr("title", message);
 
 				if (parent.settings.showTooltipInstantly === true) {
