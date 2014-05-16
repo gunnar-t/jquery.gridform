@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+ 
+    
+    
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    
+    <!-- Code highlighting -->
+    <link rel="stylesheet" href="highlight-styles/default.css">
+    <script src="js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+    
+    
+    
+    <!-- Stuff for the demo of jquery.gridform --->
+    <!-- Design stuff -->
+    
+    <link rel="stylesheet" type="text/css" href="css/jquery.gridform.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.css"><!-- optional: for nicer checboxes and stuff -->
+  
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>jQuery.gridform by gunnar-t</title>
+  </head>
+
+  <body>
+    
+    <div style="height:40px;background:#2F74C1;padding:0px;margin:0;font-family:'Architects Daughter';position:fixed;width:100%;z-index:1;" >
+        <div class="inner">        
+            <div class="menuButton"><div style="display:inline-block;padding:6px;margin-left:10px;margin-right:10px;"><a href="index.html">Home</a></div></div>
+            <div class="menuButton active"><div style="display:inline-block;padding:6px;margin-left:10px;margin-right:10px;"><a href="demo.html">Demo</a></div></div>
+            <div class="menuButton"><div style="display:inline-block;padding:6px;margin-left:10px;margin-right:10px;"><a href="documentation.html">Documentation</a></div></div>        
+        </div>
+        <div style="background:white;font-family:'Open Sans';width:100%;background:white;border-bottom:1px solid #ccc;box-shadow:0 0 5px gray;display:inline-block;">
+            <ul id="scrollspy" class="nav navbar-nav" style="font-size:0.8em;">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Select a topic <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li class="active"><a href="#gridsystem">Grid system</a></li>
+                    <li><a href="#colspan">Colspan and rowspan</a></li>
+                    <li><a href="#dimensions">Dimensions</a></li>
+                    <li><a href="#fieldTypes">Field types</a></li>
+                    <li><a href="#asyncLoad">Async loading</a></li>
+                    <li><a href="#validation">Validation</a></li>
+                    <li><a href="#fieldStates">Field states</a></li>
+                    <li><a href="#lock">Lock/unlock</a></li>
+                    <li><a href="#setget">Set and get data</a></li>
+                    <li><a href="#labelStyle">Label style</a></li>
+                    <li><a href="#fontAwesome">FontAwesome</a></li>
+                    <li><a href="#webfonts">Use webfonts</a></li>
+                    <li><a href="#customevents">Custom event handler</a></li>
+                    <li><a href="#customfields">Custom field types</a></li>
+                    <li><a href="#fullExample">Full example</a></li>
+                 </ul>
+                </li>
+        
+            </ul>
+
+        </div>
+    </div>
+    
+     
+    
+    <a href="https://github.com/gunnar-t/jquery.gridform"><img style="position: fixed; top: 0; right: 0; border: 0; width: 149px; height: 149px;z-index:2;" src="http://aral.github.com/fork-me-on-github-retina-ribbons/right-graphite@2x.png" alt="Fork me on GitHub"></a>
+    
+    <div style="position:absolute;top:100px;bottom:0;left:0;right:0;overflow-y:scroll;">
+    
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content" style="width:inherit;">
+            
+
+            
+           <h2 id="gridsystem"><a name="jquerygridform" class="anchor" href="#jquerygridform"><span class="octicon octicon-link"></span></a>The grid system</h2>
+
+                
+                <p>The grid system of jquery.gridform aligns all elements in a table of rows and cells starting with the count of 1 at the upper left corner. 
+                So a grid system with four fields starting with 1_1 (first row, first cell) to 3_1 (third row, first cell) and a fourth field at 3_2 (third row, second cell) would be rendered like this: </p>
+                
+                <div id="example1" class="example" ></div>
+                <span style="font-size:0.7em;">This is rendered with the optional argument "showCellNames"</span> 
+                
+                
+                <p>And then the same form with content:</p>
+                
+                <div id="example2" class="example" data-has-source="true"></div>
+
+                <p>For this to work, you just need to create a new gridform and pass some settings to it. At least a unique name and fields.</p>
+                
+                <pre><code class="language-javascript">var t1 = $().gridform({
+    /* unique name of the form */
+    'name': 'form1', 
+    /* fields of the form */
+    'fields': {
+        '1_1' : {
+        	'id'        : 'login',
+        	'label'     : 'Login',
+        	'type'      : 'string',
+        	'width'     : '150px'
+        },
+        '2_1' : {
+        	'id'        : 'pwd',
+        	'label'     : 'Password',
+        	'type'      : 'string',
+        	'pwd'       : true,
+        	'width'     : '150px',
+        	'maxLength' : 10,
+        },
+        '3_1' : {
+        	'id'        : 'pwdRepeat',
+        	'label'     : 'Password repeat',
+        	'type'      : 'string',
+        	'pwd'       : true,
+        	'width'     : '150px',
+        	'maxLength' : 10
+        },
+        '3_2' : {
+        	'id'        : 'new',
+        	'label'     : 'New user',
+        	'type'      : 'boolean',
+        	'width'     : '150px'
+        },
+    }
+});
+/* Render the form */
+t1.render();
+/* or (if you want to access it directly) */
+gridform.forms['form1'].render();
+ </code></pre>
+                
+                <h2 id="colspan">Take more space: colspan and rowspan</h2>
+                
+                <p>Consider you need to build a more complex grid for a form. There you have a text field which should get more space (with rowspan), a headline
+                    (with cellspan) and a url string field (with cellspan) to cover the whole grid.</p>
+                
+                <div id="example3" class="example" style=""></div>
+                <p>This is done by using the properties "colspan" and "rowspan" in the field definition (see the code example).</p>    
+                <pre><code class="language-javascript">
+// Addes objects in the fields section of the settings
+'1_1' : {
+    'id'          : 'caption',
+    'label'       : 'Caption',
+    'type'        : 'headline',
+    'colspan'     : 2   // span over 2 cells
+},
+'2_2' : {
+    'id'          : 'new',
+    'label'       : 'Description',
+    'type'        : 'text',
+    'width'       : '100%',
+    'rowspan'     : 3, //span over 3 rows
+    'placeholder' : 'has a rowspan of 3'
+},
+'5_1' : {
+    'id'          : 'url',
+    'label'       : 'Url',
+    'type'        : 'string',
+    'width'       : '100%',
+    'colspan'     : 2, //span over 2 cells
+    'placeholder' : 'has a colspan of 2'
+},
+...
+</code></pre>
+
+        <h2 id="dimensions">Define size of content and labels</h2>
+        <p>In the example above the available space of the table is split into equal parts for each cell. But maybe you want more space for the second cell (the textarea). Therefore
+        you can use the property "dimension" of the settings. There you have the opportunity to control both the lenght of label and content of a cell.</p>
+
+        <div id="example4" class="example" style=""></div>
+                
+                <pre><code class="language-javascript">...
+'dimensions' : {
+    'col_1' : {
+        'labelWidth'   : '120px',
+        'contentWidth' : "200px"
+    },
+    'col_2' : {
+        'labelWidth'   : '80px'
+    }
+}
+...
+</code></pre>  
+
+        <h2 id="fieldTypes">Field types</h2>
+        <p>The filed types contained in the basic version of gridform are limited. There are now date or time fields, no colour pickers, etc. Due to the fact, that there are so many different excellent libs out there for doing that, I decided to let the user <a href="#extendWithOwnFields">extend the fields</a> very easily by themself. So these field types are built in:
+        
+        <ul>
+            <li><a href="documentation.html#fieldtype.string">String</a> (type:"string")
+            <li><a href="documentation.html#fieldtype.string">Password</a> (type:"string", with parameter pwd:"true")
+            <li><a href="documentation.html#fieldtype.text">Text</a> (type:"text")
+            <li><a href="documentation.html#fieldtype.select">Select</a> (type: "select")
+            <li><a href="documentation.html#fieldtype.checkbox">Checkbox</a> (type: "checkbox")
+            <li><a href="documentation.html#fieldtype.radio">Radiobutton</a> (type: "radio")
+            <li><a href="documentation.html#fieldtype.boolean">Boolean</a> (type: "boolean")
+            <li><a href="documentation.html#fieldtype.headline">Headline</a> (type: "headline")
+            <li><a href="documentation.html#fieldtype.separator">Separator</a> (type: "separator")
+        </ul>    
+       
+        </p>
+
+        <div id="example5" class="example" style=""></div>
+        
+        <pre><code class="language-javascript">...
+// minimal definition of the field types
+'1_1' : {
+	'id' : 'string',
+	'label' : 'string',
+	'type' : 'string',
+	'width' : '250px'
+},
+'2_1' : {
+	'id' : 'pwd',
+	'label' : 'pwd',
+	'type' : 'string',
+	'pwd' : true,
+	'width' : '250px'
+},
+'3_1' : {
+	'id' : 'text',
+	'label' : 'text',
+	'type' : 'text',
+	'width' : '250px',
+},
+'4_1' : {
+	'id' : 'select',
+	'label' : 'select',
+	'type' : 'select',
+	'width' : '250px',
+	'selection' : [{key : 1,value : 'first option'}, {key : 2,value : 'second option'}]
+},
+'5_1' : {
+	'id' : 'checkbox',
+	'label' : 'checkbox',
+	'type' : 'checkbox',
+	'selection' : [{key : 1,value : 'first option'}, { key : 2, value : 'second option'}]
+},
+'6_1' : {
+	'id' : 'radio',
+	'label' : 'radio',
+	'type' : 'radio',
+	'selection' : [{key : 1,value : 'first option'}, {key : 2,value : 'second option'}]
+},
+'7_1' : {
+	'id' : 'boolean',
+	'label' : 'boolean',
+	'type' : 'boolean'
+},
+'8_1' : {
+	'id' : 'headline',
+	'label' : 'headline',
+	'type' : 'headline'
+},
+'9_1' : {
+	'id' : 'separator',
+	'type' : 'separator'
+},
+...
+</code></pre>
+        
+        
+        <br/>
+        
+        <h2 id="asyncLoad">Async load of choices for select</h2>
+        <p>Selection fields, checboxes and radio buttons all need an attribute "selection" configured in their field definition. That's the list of choices for the element, as seen in the code above (e.g. the field 4_1). The select field is special here: instead of a fixed json object, you can define a function that return the list of choices. This can be used for compute the list at runtime or call a backend via async ajax call. The field knows if a function is called and will present a "loading-state" information to the user and lock the field until the selection data is available.
+        </p>
+        
+        <div id="example5a" class="example" style=""></div>
+        <button onClick="t5a.render();" class="btn btn-primary">Reload</button>
+        <pre><code class="language-javascript">...
+'1_1' : {
+	'id' : 'select1',
+	'label' : 'select with fixed choices',
+	'type' : 'select',
+	'width' : '250px',
+	// fixed list
+	'selection' : [{key : 1,value : 'first option'}, {key : 2,value : 'second option'}]
+},
+'2_1' : {
+	'id' : 'select2',
+	'label' : 'select with direct return function',
+	'type' : 'select',
+	'width' : '250px',
+	'selection' : function (callback) {
+		// generate some options at runtime
+		var data = [];
+		for (var x = 0; x < 100; x++) {
+			data.push({	'key' : x,'value' : 'Option ' + x});
+		}
+		// call the backend and return the data
+		callback(data);
+	}
+},
+'3_1' : {
+	'id' : 'select3',
+	'label' : 'select with (fake) ajax function',
+	'type' : 'select',
+	'width' : '250px',
+	'selection' : function (callback) {
+		// here you can call the backend via ajax (to fake a longer response time here with a timeout)
+		setTimeout(function () {
+			// call the backend and return the data
+			callback([{key : 1,value : 'first option'}, {key : 2,value : 'second option'}]);
+		}, 2000);
+	}
+}
+...  
+</code></pre>             
+        
+        <br/>
+
+
+        <h2 id="validation">Validation of fields</h2>
+        <p>A form is most often used to fetch data from the user and validate it before send it to the server.
+        You can configure a few options to every field type (except the visual types like headline and separator).<br>
+        <ul>
+            <li>You can add the parameter "mandatory:true" to a field so that the field is at least validated to hold any content.
+            <li>You can define a function "valdiate" that gets called with two parameters (value of the field and a callback) to return the boolean "true" or an error message. The error is shown in a tooltip when the mouse hovers the field.
+            <li>You can add the parameter "hasFeedback:true" so a visual feedback of the valid status of the field is given to the user
+            <li>If the field is mandatory or has a validate function then you can set the field setting "validateOnBlur:true" to add a blur event handler. This validates the field immediately when the focus is lost.
+        </ul>
+        
+        The default visual feedback is coloured red for errors, yellow for warnings and gray for success. If you want to have green visual feedback (for the whole form) add the parameter "successIsGreen: true" to the form settings (see the second form example).
+        
+        </p>
+        <div class="alert alert-info">
+            <i class="fa fa-info-circle"></i> If a validation function needs time (e.g. an ajax call to the server for validation), the field gets locked until the callback gets and validation answer.
+        </div>
+         
+
+        
+        <div id="example6" class="example" style=""></div>
+        <div id="example7" class="example" style=""></div>
+        <button onClick="t6.validate();t7.validate();" class="btn btn-primary">Validate</button> <button onClick="t6.flush();t7.flush();" class="btn btn-primary">Reset</button>
+        <br />
+        
+        <pre><code class="language-javascript">...
+// e.g. a field name with an validation function that 
+// return true when the length is more than 4 characters
+'fields' : {
+	'1_1' : {
+		'id'          : 'text',
+		'label'       : 'text',
+		'placeholder' : 'text',
+		'type'        : 'string',
+		'width'       : '150px',
+		'hasFeedback' : false,
+		'mandatory'   : true, // this is a mandatory field
+		'validate'    : function (value, callback) {
+			if (value.length > 6) {
+				callback(true);
+			} else {
+				callback("Please more than 6 characters!");
+			}
+		}
+	}
+},
+...
+</code></pre>
+    
+    
+        
+        <h2 id="fieldStates">Set field states (error, warning or success) via code</h2>
+        <p>If you need to set a state like warning, error or success to a field without doing a validation, you can do that by calling the "setStates"-function of the gridform. The state can be set like this:
+        <ul>
+            <li> gridformname.setError(&lt;field id&gt;,&lt;error text&gt;);
+            <li> gridformname.setWarning(&lt;field id&gt;,&lt;warning text&gt;);
+            <li> gridformname.setSuccess(&lt;field id&gt;);
+        </ul>
+        
+        
+        <div id="example8" class="example" style=""></div>
+        <button onClick="t8.setError('field','Error text');" class="btn btn-primary">Set error</button> 
+        <button onClick="t8.setWarning('field','Warning text');" class="btn btn-primary">Set warning</button>
+        <button onClick="t8.setSuccess('field');" class="btn btn-primary">Set success</button>
+        
+        
+        <br />
+        <br />
+        <h2 id="lock">lock/unlock fields or the whole form</h2>
+        <p>You can lock single fields or the whole form by using the "lock"-function on the form object. You can also switch the render-mode between "view" and "edit" in the settings or by call the switchMode-function.
+        
+        <div class="alert alert-info"><i class="fa fa-info-circle"></i> Currently the gridform renders the form equaly in both modes; the only difference is the locking state is true at all fields in the view mode.<br>
+        If you want to have a complete different rendering output in view mode, you can overwrite all the fields render-methods or define own fields (more on that later).
+        </div>
+        </p>
+        
+        
+        
+        <div id="example9" class="example" style=""></div>
+        
+        <button onClick="t9.enable(false,'login');" class="btn btn-primary">Lock "login"</button> 
+        <button onClick="t9.enable(true,'login');" class="btn btn-primary">Unlock "login"</button>
+        <button onClick="t9.enable(false);" class="btn btn-primary">Lock the whole form</button>
+        <button onClick="t9.enable(true);" class="btn btn-primary">Unlock the whole form</button>
+        <button onClick="t9.switchMode('view');" class="btn btn-primary">Render in view mode</button>
+        <button onClick="t9.switchMode('edit');" class="btn btn-primary">Render in edit mode</button>
+        
+        <pre><code class="language-javascript">...
+// lock the field "login" (the example is bound to the form t9)
+t9.enable(false,'login');
+//unlock the field "login"
+t9.enable(true,'login');
+// lock the whole form
+t9.enable(false);
+// unlock the whole form
+t9.enable(true);
+// render/switch to view mode
+t9.switchMode('view');
+// render/switch to edit mode
+t9.switchMode('edit');
+...
+</code></pre>       
+        
+
+        <h2 id="setget">Set data / get data</h2>
+        <p>The main cause for using forms is creating and editing data (of course). Therefore you can use the "getData" and the "setData"-method of the gridform object. You can provide the setter function with a json-object and set all the data you want in one call. Just provide a key-value pair for every field you want to set. A checkbox field expects an array that contains the "checked" elements in a list.</p>
+        <ul>
+            <li>Set data: gridformname.setData(&lt;key-value-object&gt;);
+            <li>Get data: gridformname.getData(&lt;key-value-object&gt;);
+            <li>Get all the data of the form: gridformname.getData();
+        </ul>
+        
+        <div id="example10" class="example" style=""></div>
+        
+        <button onClick="t10.setData({'login':'loginname','pwd':'test1234','product':[1]});" class="btn btn-primary">Set some data</button> 
+        <button onClick="t10.setData({'product':[1,2,3]});" class="btn btn-primary">Check all checkboxes</button>
+        <button onClick="$('#resultsOfGetData').html(t10.getData('pwd'));" class="btn btn-primary">Get the password data</button>
+        <button onClick="$('#resultsOfGetData').html(JSON.stringify(t10.getData()));" class="btn btn-primary">Get all data</button>
+           
+        <div id="resultsOfGetData" style="height:40px;padding:5px;margin:5px;border:1px solid gray;"></div> 
+         
+         <pre><code class="language-javascript">...
+// set data
+t10.setData({'login':'loginname','pwd':'test1234','product':[1]});
+// set checkbox data
+t10.setData({'product':[1,2,3]});
+// get the password data: returns a single string (or object with keys in case of a checkbox)
+t10.getData('pwd');
+// get the form data: returns a json object with all the data
+t10.getData()
+...
+</code></pre>     
+
+
+        <h2 id="labelStyle">Label style</h2>
+        <p>Labels can be positioned above the fields or left to them. Another style option is to align the label right or left in the surrounding cell. The possible settings for that are:
+        <ul>
+            <li>labelType = "inline|over" 
+            <li>labelAlign = "right|left"         
+        </ul>
+        
+        <div style="height:330px;text-align:center;">
+            <div id="example11" class="example" style="margin:0px auto;width:350px;height:300px;"></div><br>
+            <button onClick="t11.switchLabelType();" class="btn btn-primary">Switch label type</button>
+        <button onClick="t11.switchLabelAlign();" class="btn btn-primary">Switch label align</button>
+        </div>
+      
+
+        
+        <br><br>
+        
+        <h2 id="fontAwesome">Use FontAwesome for the checkboxes and radio inputs</h2>
+        <p>Since there are so many great web-fonts out there in the wild, you can choose them for your grid icons or form controls (like checkboxes and radio buttons).</p>
+        <p>If you want to use e.g. FontAwesome you can set the attribute "useFontAwesome" to true and take a look at the result with nice checkboxes and radio buttons.</p>
+
+        <div id="example12" class="example" style=""></div>
+        <button onClick="t12.validate();" class="btn btn-primary">Validate</button>
+        
+        <br><br>
+        
+        <h2 id="webfonts">Use any webfont for status icons</h2>
+        <p>You can define the icons for error, warning, success and waiting/loading status by overwriting the class names for these states in the settings. By default the grid uses glyphyicons for that. The icon settings are
+        <ul>
+            <li>icon_success
+            <li>icon_error
+            <li>icon_warning
+            <li>icon_waiting
+        </ul>
+        Take a look at this funny replacement with FontAwesome icons.
+        </p>        
+        <div style="">
+            <div id="example13" class="example" style="width:45%;float:left;"></div>
+            <div id="example14" class="example" style="width:45%;float:right;"></div>
+        </div>
+        <div style="clear:both"></div>
+        
+<pre><code class="language-javascript">t14 = $().gridform({
+    'name' : 'form14',
+    'debug' : false,
+    'successIsGreen' : true,
+    'fields' : fields,
+    //Icons for the status
+    icon_success : 'fa fa-thumbs-o-up',
+    icon_error : 'fa fa-bug',
+    icon_warning : 'fa fa-info-circle',
+    icon_waiting : 'fa fa-spinner fa-spin',
+    'dimensions' : {
+        'col_1' : {
+            'labelWidth' : '120px',
+            'contentWidth' : "200px"
+        }
+    }
+});
+</code></pre>
+
+
+        <h2 id="customevents" >Add event handlers to fields</h2>
+        <p>You can easily attach any handler to a field, since you can get the basic element from the grid. Just call the function 
+        <ul>
+            <li>gridformname.getElement(&lt;id&gt);
+        </ul>
+        and attach any event to it. Here is an example with a custom focus and blur handler.</p>
+        
+        <div id="example15" class="example" style=""></div>
+        
+<pre><code class="language-javascript">// Example name
+t15.render('#example15');
+// get the element
+var elem = t15.getElement("string");
+// add a focus handler
+elem.on("focus", function () {
+    // set a warning when accessing the field
+	t15.setWarning("string", "ups, custom focus handler");
+}).on("blur", function () {
+    // add a blur handler: directly validate the field
+	console.log("This is a custom handler");
+	t15.validate("string");
+});
+</code></pre>
+
+        <h2 id="customfields">Add custom field types</h2>
+        
+        <p>There are only basic field types available (for a reason). But if you want to add your own field types, just add them right away.<br>
+        Think of a date field, that is used with a javascript library like <a href="http://stefangabos.ro/jquery/zebra-datepicker/">Zebra_Datepicker</a>.
+        </p>
+        <p>This is a standard date field with Zebra_Datepicker: <input type="text" id="zebra1"></input>
+        </p>
+        <p>You can add a custom field by adding an json-object to the global object called "gridform". In the object you need at least a "render" function, that returns some HTML code. Here is a list of all the functions you can provide with your field:
+            <ul>
+                <li>setLabel: function (data, cellSelectorLabel, parent)    
+                <li>render the field content: render(data, cellSelector, parent)
+                <li>set the field content: set(data, value, cellSelector, parent)
+                <li>set a placeholder: setPlaceholder(data, value, cellSelector, parent)
+                <li>get the field content: get(data, cellSelector)
+                <li>flush the field: flush(cellSelector, parent) 
+                <li>enable/disable the field: enable(field, enable, cellSelector)
+                <li>get the field, input, select, etc.: getFieldNode(field, cellSelector)
+                <li>set the status of the field: setStatus(field, type, cellSelectorLabel, cellSelectorContent, parent)
+                <li>set an error: setError(field, error, cellSelectorLabel, cellSelectorContent, parent) 
+                <li>set success: setSuccess(field, error, cellSelectorLabel, cellSelectorContent, parent) 
+                <li>set a warning: setWarning(field, error, cellSelectorLabel, cellSelectorContent, parent) 
+                <li>set waiting: setWaiting(field, message, cellSelectorLabel, cellSelectorContent, parent)
+                <li>reset all the field markings: resetFieldMark(data, cellSelectorLabel, cellSelectorContent, parent)
+                <li>method that gets called after the content was created and added to the DOM: afterDOMCreation(data, cellSelector, parent)
+
+            </ul>
+        </p>
+        
+<pre><code class="language-javascript">// Very simple custom date function
+gridform.addType("date", {
+	// a simple render function
+	render : function () {
+		var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
+		return '&lt;input ' + disabled + ' type="text" class="form-control"&gt;&lt;/input&gt;';
+	},
+	//at least lock/unlock the field
+	enable : function (data, enable, cellSelector) {
+
+		if (enable === true) {
+			$(cellSelector).find("input").removeAttr("disabled");
+		} else if (enable === false) {
+			$(cellSelector).find("input").attr("disabled", "disabled");
+		}
+		// set the locked status in the DatePicker
+		var elem = $(cellSelector).find("input");
+		elem.Zebra_DatePicker();
+
+	},
+	// after the element is in the DOM
+	afterDOMCreation : function (data, cellSelector, parent) {
+		//add the date-picker
+		var elem = $(cellSelector).find("input");
+		elem.Zebra_DatePicker();
+	}
+});
+
+// define the grid
+t16 = $().gridform({
+    'name' : 'form16',
+    'debug' : false,
+    'fields' : {
+        '1_1' : {
+            'id' : 'date',
+            'label' : 'Date',
+            'type' : 'date'
+        }
+    },
+    'dimensions' : {
+        'col_1' : {
+            'labelWidth' : '120px',
+            'contentWidth' : "200px"
+        }
+    }
+});
+// render the form
+t16.render('#example16');
+</code></pre>
+        
+        <div id="example16" class="example" style=""></div>        
+        <br />
+        
+        <h2>Full example</h2>
+        
+        <p>Just play around with (nearly) all the features in one form.</p>
+        
+        <div id="fullExample" class="example" style=""></div>
+        <div style="padding:4px;">
+            <button id="validate" class="btn btn-primary" style="margin:px;">Validate</button>
+            <button onClick="t.flush();" class="btn btn-primary" style="margin:px;">Flush</button>
+            <button onClick="t.resetFieldMarks();" class="btn btn-primary" style="margin:px;">Reset</button>
+            <button onClick="t.switchMode('view');" class="btn btn-primary" style="margin:px;">Render in View-Mode</button>
+            <button onClick="t.switchMode('edit');" class="btn btn-primary" style="margin:px;">Render in Edit-Mode</button>
+         </div>
+         <div style="padding:4px;">
+            <button onClick="t.enable(false);" class="btn btn-primary" style="margin:px;">Lock</button>
+            <button onClick="t.enable(true);" class="btn btn-primary" style="margin:px;">Unlock</button>
+            <button onClick="console.log(t.getData());" class="btn btn-primary" style="margin:0px;">Get data</button>
+            <button onClick="switchLabelStyle(t);" class="btn btn-primary" style="margin:0px;">Switch label style</button>
+            <button onClick="registerHandler(t);" class="btn btn-primary" style="margin:0px;">Register Handler</button>
+         </div>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        <!-- DISQUS!!!! -->
+        <div id="disqus_thread" style="border:1px solid gray;"></div>
+        <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'jquery.gridform-discussion'; // Required - Replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+            
+                
+                
+                
+                
+            
+        <!-- END OF CONTENT --->
+        </section>
+
+        
+      </div>
+    </div>
+    </div><!--END OF ABSOLUTE POSITONED CONTAINER.-->
+    
+    
+    
+    
+    
+    
+
+    <!-- JS-Libs (best to include at the END of your HTML file !!-->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.gridform.js"></script>
+    
+    <!-- Zebra_Datepicker for example field -->
+    <script src="js/zebra_datepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/zebra.css" media="screen" />
+    
+    <script src="js/demo.js"></script>
+    
+    
+    
+  </body>
+</html>

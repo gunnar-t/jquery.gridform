@@ -20,16 +20,25 @@
     <header>
       <div class="inner">
         <h1>jQuery.gridform</h1>
-        <h2>jQuery-Plugin for creating complex forms (table-based) with usage of bootstrap and (optional) Font-Awesome.</h2>
+        <h2>jQuery-Plugin for creating complex forms (table-based) with usage of bootstrap and Font-Awesome.</h2>
         <a href="https://github.com/gunnar-t/jquery.gridform" class="button"><small>View project on</small>GitHub</a>
       </div>
     </header>
+    <div style="height:40px;background:#2F74C1;padding:0px;margin:0;font-family:'Architects Daughter';" >
+        <div class="inner">        
+            <div class="menuButton active"><div style="display:inline-block;padding:6px;margin-left:10px;margin-right:10px;"><a href="index.html">Home</a></div></div>
+            <div class="menuButton "><div style="display:inline-block;padding:6px;margin-left:10px;margin-right:10px;"><a href="demo.html">Demo</a></div></div>
+            <div class="menuButton"><div style="display:inline-block;padding:6px;margin-left:10px;margin-right:10px;"><a href="documentation.html">Documentation</a></div></div>        </div>
+    </div>
+    
+    
+        <a href="https://github.com/gunnar-t/jquery.gridform"><img style="position: absolute; top: 0; right: 0; border: 0; width: 149px; height: 149px;" src="http://aral.github.com/fork-me-on-github-retina-ribbons/right-graphite@2x.png" alt="Fork me on GitHub"></a>
 
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
           <h1>
-<a name="jquerygridform" class="anchor" href="#jquerygridform"><span class="octicon octicon-link"></span></a>jquery.gridform</h1>
+<a name="jquerygridform" class="anchor" href="#jquerygridform"><span class="octicon octicon-link"></span></a>jQuery.gridform</h1>
 
 <p>jQuery-Plugin for creating complex forms (table-based) with usage of bootstrap and (optional) Font-Awesome.</p>
 
@@ -44,15 +53,15 @@ some lib for my projects that could handle the following:</p>
 <li>Have an "edit" and a "view" mode</li>
 <li>Simple add validation or other event handler on form elements</li>
 <li>Use the excellent bootstrap design and optional font awesome for "nicer" form ui</li>
-<li>Have the ability to use elements spanning over some rows of the grid (rowspan and colspan)</li>
+<li>Have the ability to use elements spanning over some rows/cells of the grid (rowspan and colspan)</li>
 </ul><p>Since I did not find a library doing all that in a kindly manner: I did it myself :)
 The code was done in three days in my sparetime, so I am sorry for all the mess and all the bugs that are still in there.</p>
 
 <h2>
 <a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>Example</h2>
 
-<p>This is how a form could look like.
-EXAMPLE IMAGE</p>
+<p>This is how a form could look like (<a href="demo.html#fullExample">Demo</a>).
+<img style="margin-top:10px;margin-bottom:10px;box-shadow:0 0 5px gray;" src="images/form-example.png"></img></p>
 
 <h2>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
@@ -61,17 +70,20 @@ EXAMPLE IMAGE</p>
 Of course you can use all the third party stuff from CDNs, if you like.
 If you want that, then you probably know what to do by yourself :)</p>
 
+
 <div class="highlight highlight-html"><pre><span class="c">&lt;!-- Design stuff --&gt;</span>
 <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span> <span class="na">href=</span><span class="s">"css/reset.css"</span><span class="nt">&gt;</span><span class="c">&lt;!-- optional: for reseting browser defaults --&gt;</span>
 <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span> <span class="na">href=</span><span class="s">"css/bootstrap.min.css"</span><span class="nt">&gt;</span>
 <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span> <span class="na">href=</span><span class="s">"css/jquery.gridform.css"</span><span class="nt">&gt;</span>
 <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span> <span class="na">href=</span><span class="s">"css/font-awesome.css"</span><span class="nt">&gt;</span><span class="c">&lt;!-- optional: for nicer checboxes and stuff --&gt;</span>
-<span class="c">&lt;!-- JS-Libs (best to include at the END ofr your HTML file !!--&gt;</span>
+<span class="c">&lt;!-- JS-Libs (best to include at the END of your HTML file !!--&gt;</span>
 <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"js/jquery.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
 <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"js/bootstrap.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
 <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"js/jquery.gridform.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
 </pre></div>
-
+<p>
+Of course you need to copy the stuff from the <b>fonts</b>, <b>js</b> and <b>css</b> folders in your project too. 
+</p>
 <h2>
 <a name="credits" class="anchor" href="#credits"><span class="octicon octicon-link"></span></a>Credits</h2>
 

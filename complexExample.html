@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" type="text/css" href="reset.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/font-awesome.css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="css/jquery.gridform.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/jquery.gridform.js"></script>
+<script src="js/testGridform.js"></script>
+<script>
+
+    function switchLabelStyle(obj){
+        
+        console.log(obj);
+        if(obj.settings.labelType === "over"){
+            obj.settings.labelType = "inline";
+            obj.settings.labelAlign = "right";
+        } else {
+            obj.settings.labelType = "over";
+            obj.settings.labelAlign = "left";
+        }
+        obj.render();
+    
+    }
+    
+    function registerHandler(obj){    
+    
+        //Change-Handler to "title"
+        $(obj.getElement("title")).on("change", function(){        
+            obj.validate("title");        
+        });
+        
+        //Blur-Handler to lastname
+        $(obj.getElement("lastname")).on("blur", function(){        
+            obj.validate("lastname");        
+        });
+        
+    };
+
+</script>
+
+<style>
+
+
+
+</style>
+
+</head>
+<body style="padding:100px;">
+
+
+
+<!-- Example 1 -->
+<div id="test1" style="border:1px solid gray;padding:5px;width:100%;min-width:800px;">
+    
+
+</div>
+<div style="padding:4px;">
+    <button id="validate" class="btn btn-primary" style="margin:px;">Validate</button>
+    <button onClick="t.flush();" class="btn btn-primary" style="margin:px;">Flush</button>
+    <button onClick="t.resetFieldMarks();" class="btn btn-primary" style="margin:px;">Reset</button>
+    <button onClick="t.switchMode('view');" class="btn btn-primary" style="margin:px;">Render in View-Mode</button>
+    <button onClick="t.switchMode('edit');" class="btn btn-primary" style="margin:px;">Render in Edit-Mode</button>
+    <button onClick="t.enable(false);" class="btn btn-primary" style="margin:px;">Lock</button>
+    <button onClick="t.enable(true);" class="btn btn-primary" style="margin:px;">Unlock</button>
+    <button onClick="console.log(t.getData());" class="btn btn-primary" style="margin:0px;">Get data</button>
+    <button onClick="switchLabelStyle(t);" class="btn btn-primary" style="margin:0px;">Switch label style</button>
+    <button onClick="registerHandler(t);" class="btn btn-primary" style="margin:0px;">Register Handler</button>
+    
+</div>
+
+
+</body>
