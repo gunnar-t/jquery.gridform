@@ -477,3 +477,42 @@ footer a:hover {
 
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (max-width: 479px) {}
+
+
+
+.menuButton {
+    display:inline-block;
+    height:40px;
+    color:white;
+    font-size:1.5em;
+}
+
+.menuButton.active {    
+    display:inline-block;
+    height:40px;
+    background:white;
+    color:#2F74C1;
+    font-size:1.5em;
+}
+
+.menuButton a {
+    color:white;
+}
+
+.menuButton.active a {
+   color:#2F74C1;
+}
+
+.example {
+    background:white;
+    box-shadow:0 0 3px gray;
+    margin:10px;
+    position:relative;
+
+}
+
+.hljs {
+    font-size:0.9em;
+}
+
+
