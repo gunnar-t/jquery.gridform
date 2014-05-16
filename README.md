@@ -35,7 +35,6 @@ If you want that, then you probably know what to do by yourself :)
 <script src="js/jquery.gridform.js"></script>
 ```
 
-
 ## Credits
 
 Thanks to the excellent work of 
