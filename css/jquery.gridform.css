@@ -1,0 +1,109 @@
+table.gridform {  
+    width:100%;
+    table-layout:fixed;
+    overflow:hidden;
+    white-space: nowrap;
+}
+
+table.gridform form {
+    padding:0;
+    margin:0;
+}
+
+table.gridform td { 
+    border:0px solid gray;
+}
+
+/** Content in the td **/
+table.gridform td * {    
+    vertical-align:top;
+}
+
+td.gridform_content {
+    text-align:left;
+    padding:4px;
+    margin:0;    
+}
+
+td.gridform_label {
+    padding:10px 4px 0px;  
+    margin:0;
+    vertical-align:top;
+    color:gray;
+}
+
+table.gridform .control-label {
+    font-size:0.9em;
+    font-weight:normal;
+    font-family:'Open Sans';
+}
+
+table.gridform div.headline {
+    font-size:1.4em;
+    border-bottom: 1px solid #ccc;
+    text-align:left;
+    margin:0px;  
+    font-family:'Open Sans';
+    
+}
+table.gridform div.separator {
+    background:#ccc;
+    height:1px;
+    
+}
+
+table.gridform select {
+    padding: 6px 6px;
+}
+
+table.gridform div.form-group {
+    margin:0;
+    padding:0;
+    display:inline-block;
+}
+
+table.gridform .form-control {
+    border-radius:0;
+}
+
+table.gridform div.checkbox {
+   margin-top:5px; 
+}
+table.gridform div.radio {
+   margin-top:5px; 
+}
+
+
+/* custom checkboxes with font awesome */
+
+table.gridform div.fontA{
+    margin-top:6px;
+    margin-bottom:8px;
+    padding-left:2px;    
+}
+table.gridform div.fontA{
+    margin-top: 6px;
+    margin-bottom:8px; 
+    padding-left:2px;      
+}
+
+input[type=checkbox].fontA { display:none; }
+input[type=checkbox].fontA + label:before {
+  font-family: FontAwesome;
+  display: inline-block;
+}
+input[type=checkbox].fontA + label:before { content: "\f096"; letter-spacing: 11px; }
+input[type=checkbox].fontA:checked + label:before { content: "\f046"; letter-spacing: 9px; }
+input[type=checkbox].fontA:disabled  + label:before{ color:gray; }
+input[type=checkbox].fontA + label.disabled { color:gray;}
+
+/* custom radio buttons with font awesome */
+input[type=radio].fontA { display:none; }
+input[type=radio].fontA + label:before {
+  font-family: FontAwesome;
+  display: inline-block;
+}
+input[type=radio].fontA + label:before { content: "\f10c"; letter-spacing: 10px;}
+input[type=radio].fontA:checked + label:before { content: "\f192"; letter-spacing: 10px; } 
+input[type=radio].fontA:disabled  + label:before{ color:gray; }
+input[type=radio].fontA + label.disabled { color:gray;}
