@@ -1,9 +1,12 @@
 var gridform = gridform || {};
 /**
- * GridForm-Plugin
+ * jquery.gridform v0.3
+ *
  * Built as jQuery PlugIn for usage with bootstrap 3.x
  * can be overwritten for usage with other libs
  *
+ * (c) Gunnar Thies, 2014
+ * 
  * MIT-License 2014
  *
  */
