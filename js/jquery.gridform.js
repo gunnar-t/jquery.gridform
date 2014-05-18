@@ -1,6 +1,6 @@
 var gridform = gridform || {};
 /**
- * jquery.gridform v0.3
+ * jquery.gridform v0.3.1
  *
  * Built as jQuery PlugIn for usage with bootstrap 3.x
  * can be overwritten for usage with other libs
@@ -135,6 +135,8 @@ var gridform = gridform || {};
 			this.cols = 0;
 			this.rows = 0;
 			var fields = {};
+            this.focusOnField = null;
+            
 
 			for (var x in this.settings.fields) {
 				//Get row and col by splitting the key at the _
@@ -161,6 +163,16 @@ var gridform = gridform || {};
 				} else {
 					//Add the field
 					this.fieldsById[this.settings.fields[x].id] = this.settings.fields[x];
+                    
+                    //check if this field wants the focus
+                    if(this.settings.fields[x].hasFocus === true){
+                        if(this.focusOnField === null){
+                            this.focusOnField = this.settings.fields[x].id;
+                        } else {
+                            console.error("Focus is already configured for field '"+this.focusOnField+"'.");
+                        }
+                    }
+                    
 					//counter for the number of fields (if the can be validated and contain data)
 					if (gridform.types[this.settings.fields[x].type] !== undefined && gridform.types[this.settings.fields[x].type].containsData === true) {
 						this.fieldCount++;
@@ -474,6 +486,11 @@ var gridform = gridform || {};
 				} else {
 					console.error("No rendering function for type " + type);
 				}
+                
+                //Set a focus (if configured)
+                if(this.focusOnField !== null){
+                    this.getElement(this.focusOnField).focus();
+                }                
                 
 				//Are there functions for some methods after adding the grid, label and contents to the DOM
 				//e.g. Event Handler, async loadable Selection-Options, etc....

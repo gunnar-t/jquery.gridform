@@ -16,7 +16,7 @@ $(document).ready(function(){
                 '2_1': {'id': 'title', 'label': 'Title', 'type': 'select', 'width': '100px', mandatory: true,  'withoutPlaceholder': false,  'selection': [{'key':2,'value': 'Mr.'},{'key':3,'value':'Mrs.'}]},
                 '2_2': {'id': 'title2', 'label': 'Send newsletter', 'type': 'boolean', 'width': '100px'},
                 
-                '3_1': {'id': 'lastname', 'label': 'Lastname', placeholder:'Lastname', 'type': 'string', 'hasFeedback': true, 'width': '100%', mandatory: true},
+                '3_1': {'id': 'lastname', 'label': 'Lastname', placeholder:'Lastname', 'hasFocus': true, 'type': 'string', 'hasFeedback': true, 'width': '100%', mandatory: true},
                 '3_2': {'id': 'firstname', 'label': 'Firstname', placeholder:'Firstname', 'type': 'string', 'hasFeedback': true, 'width': '100%', mandatory: true, validate: function(value, callback){
                     
                     if(value.length > 6){
@@ -33,7 +33,7 @@ $(document).ready(function(){
                 
                 
                 
-                '5_2': {'id': 'description', 'label': 'Description', 'type': 'text',  'hasFeedback': true, 'width': '100%', 'colspan': 1, 'rowspan':3},
+                '5_2': {'id': 'description', 'label': 'Description', 'type': 'text', 'hasFeedback': true, 'width': '100%', 'colspan': 1, 'rowspan':3},
                 
                 '4_1': {'id': 'dsf', 'type': 'headline', 'label': 'Your profession', colspan:2},
                 '5_1': {'id': 'company', 'label': 'Company', 'type': 'string', 'validateOnBlur': true, 'hasFeedback': true, 'mandatory': true, validate: function(value, callback){
