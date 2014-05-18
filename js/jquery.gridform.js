@@ -29,43 +29,50 @@ var gridform = gridform || {};
 		renderedAtTarget : null,
 		rendered : null,
 		fieldCount : null,
+        //default settings that can be overwritten on prototype level :)
+        defaultSettings: {
+            // These are the defaults.
+            //Debug mode
+            debug : false,
+            //Mode is edit / you can switch to view-mode
+            mode : 'edit',
+            //LabelType: inline vs. over
+            labelType : 'inline',
+            //Alignment of labels; default: right
+            labelAlign : 'right',
+            //directly show error tooltips
+            showTooltipInstantly : false,
+            //where to show the tooltips
+            tooltipOrientation: "bottom",
+            //success should not be shown by green color (if you do not want a rainbow coloured form :))
+            successIsGreen : false,
+            //use font-awesome for checkboxes and radio-buttons
+            useFontAwesome : false,
+            //Icons for the status
+            icon_success : 'glyphicon glyphicon-ok',
+            icon_error : 'glyphicon glyphicon-remove',
+            icon_warning : 'glyphicon glyphicon-warning-sign',
+            icon_waiting : 'glyphicon glyphicon-refresh',
+            //language
+            language : {
+                // this is shown as error message for a mandatory field
+                'mandatoryField' : 'This is a mandatory field',
+                // this is shown when a field is in loading state
+                'loading' : 'Loading ...',
+                // this is the placeholder element in a not yet selected select box
+                'selectPlaceholder' : '-',
+            },
+            //dimensions
+            dimensions : {},
 
-		init : function (settings) {
+        },
+        
+        
+
+		init : function (userSettings) {
 
 			//Settings
-			this.settings = $.extend({
-                // These are the defaults.
-                //Debug mode
-                debug : false,
-                //Mode is edit / you can switch to view-mode
-                mode : 'edit',
-                //LabelType: inline vs. over
-                labelType : 'inline',
-                //Alignment of labels; default: right
-                labelAlign : 'right',
-                //directly show error tooltips
-                showTooltipInstantly : false,
-                //where to show the tooltips
-                tooltipOrientation: "bottom",
-                //success should not be shown by green color (if you do not want a rainbow coloured form :))
-                successIsGreen : false,
-                //use font-awesome for checkboxes and radio-buttons
-                useFontAwesome : false,
-                //Icons for the status
-                icon_success : 'glyphicon glyphicon-ok',
-                icon_error : 'glyphicon glyphicon-remove',
-                icon_warning : 'glyphicon glyphicon-warning-sign',
-                icon_waiting : 'glyphicon glyphicon-refresh',
-                //language
-                language : {
-                    'mandatoryField' : 'This is a mandatory field',
-                    'loading' : 'Loading ...',
-                    'selectPlaceholder' : '-',
-                },
-                //dimensions
-                dimensions : {},
-
-            }, settings);
+			this.settings = $.extend(this.defaultSettings, userSettings);
 
 			//At least a name must be prodived!
 			if (this.settings.name === undefined) {
@@ -1588,7 +1595,16 @@ var gridform = gridform || {};
 	gridform.addType = function (type, object) {
 		gridform.types[type] = $.extend({}, mastertype, object);
 	};
-
+    
+    /**
+    * Set the default values for the settings
+    * This can be useful for a standard form for a whole application
+    */
+    gridform.setDefaults = function(settings){
+        //Overwrite the default settings with the given values...
+        gridform.form.prototype.defaultSettings = $.extend(gridform.form.prototype.defaultSettings, settings);
+    };
+    
 	/*** add as jquery plugin ****/
 	$.fn.gridform = function (settings) {
 
