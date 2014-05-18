@@ -34,38 +34,38 @@ var gridform = gridform || {};
 
 			//Settings
 			this.settings = $.extend({
-					// These are the defaults.
-					//Debug mode
-					debug : false,
-					//Mode is edit / you can switch to view-mode
-					mode : 'edit',
-					//LabelType: inline vs. over
-					labelType : 'inline',
-					//Alignment of labels; default: right
-					labelAlign : 'right',
-					//directly show error tooltips
-					showTooltipInstantly : false,
-                    //where to show the tooltips
-                    tooltipOrientation: "bottom",
-					//success should not be shown by green color (if you do not want a rainbow coloured form :))
-					successIsGreen : false,
-					//use font-awesome for checkboxes and radio-buttons
-					useFontAwesome : false,
-					//Icons for the status
-					icon_success : 'glyphicon glyphicon-ok',
-					icon_error : 'glyphicon glyphicon-remove',
-					icon_warning : 'glyphicon glyphicon-warning-sign',
-					icon_waiting : 'glyphicon glyphicon-refresh',
-					//language
-					language : {
-						'mandatoryField' : 'This is a mandatory field',
-						'loading' : 'Loading ...',
-						'selectPlaceholder' : '-',
-					},
-					//dimensions
-					dimensions : {},
+                // These are the defaults.
+                //Debug mode
+                debug : false,
+                //Mode is edit / you can switch to view-mode
+                mode : 'edit',
+                //LabelType: inline vs. over
+                labelType : 'inline',
+                //Alignment of labels; default: right
+                labelAlign : 'right',
+                //directly show error tooltips
+                showTooltipInstantly : false,
+                //where to show the tooltips
+                tooltipOrientation: "bottom",
+                //success should not be shown by green color (if you do not want a rainbow coloured form :))
+                successIsGreen : false,
+                //use font-awesome for checkboxes and radio-buttons
+                useFontAwesome : false,
+                //Icons for the status
+                icon_success : 'glyphicon glyphicon-ok',
+                icon_error : 'glyphicon glyphicon-remove',
+                icon_warning : 'glyphicon glyphicon-warning-sign',
+                icon_waiting : 'glyphicon glyphicon-refresh',
+                //language
+                language : {
+                    'mandatoryField' : 'This is a mandatory field',
+                    'loading' : 'Loading ...',
+                    'selectPlaceholder' : '-',
+                },
+                //dimensions
+                dimensions : {},
 
-				}, settings);
+            }, settings);
 
 			//At least a name must be prodived!
 			if (this.settings.name === undefined) {
@@ -1064,7 +1064,7 @@ var gridform = gridform || {};
 				var html = '<div class="form-group ' + hasFeedback + '" style="' + width + '">';
 				html += '   <input type="' + type + '" ' + disabled + ' ' + maxLength + ' class="form-control" style="width:100%;" placeholder="' + placeholder + '"></input>';
 				if (hasFeedback !== "") {
-					html += '   <span style="display:none;top:0;" class="glyphicon glyphicon-ok form-control-feedback"></span>';
+					html += '   <span style="display:none;top:0;" class="'+ parent.settings.icon_success +' form-control-feedback"></span>';
 				}
 				html += '</div>';
 				//html += '</form>';
@@ -1136,7 +1136,7 @@ var gridform = gridform || {};
 				var html = '<div class="form-group ' + hasFeedback + '" style="height:100%;' + width + '">';
 				html += '   <textarea type="text" ' + disabled + ' class="form-control" style="width:100%;height:100%;resize: none;" placeholder="' + placeholder + '"></textarea>';
 				if (hasFeedback !== "") {
-					html += '   <span style="display:none;top:0;" class="glyphicon glyphicon-ok form-control-feedback"></span>';
+					html += '   <span style="display:none;top:0;" class="'+ parent.settings.icon_success +' form-control-feedback"></span>';
 				}
 				html += '</div>';
 				//html += '</form>';
@@ -1221,7 +1221,7 @@ var gridform = gridform || {};
 				var html = '<div class="form-group ' + hasFeedback + '" style="' + width + '">';
 				html += '   <select ' + disabled + ' class="form-control" style="width:100%;"></select>';
 				if (hasFeedback !== "") {
-					html += '   <span style="display:none;top:0;" class="glyphicon glyphicon-ok form-control-feedback"></span>';
+					html += '   <span style="display:none;top:0;" class="'+ parent.settings.icon_success +' form-control-feedback"></span>';
 				}
 				html += '</div>';
 				//html += '</form>';
