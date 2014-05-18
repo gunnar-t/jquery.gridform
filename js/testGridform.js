@@ -5,7 +5,6 @@ var t = null;
 $(document).ready(function(){
 
     
-
     //CODE
         t = $("#fullExample").gridform({
             'name': 'form',
@@ -74,9 +73,7 @@ $(document).ready(function(){
              
         });
         
-        
-        //t.render("#test1",{showCellNames:true});
-
+       
         //Handler auf das Element setzen
         $(t).bind("rendered",function(e, data){
             console.log(data);
@@ -107,7 +104,9 @@ $(document).ready(function(){
                 }
             });
         
-        });
+        });      
+              
+        
     
 
 

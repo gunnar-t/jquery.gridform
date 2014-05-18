@@ -1,9 +1,12 @@
 var gridform = gridform || {};
 /**
- * GridForm-Plugin
+ * jquery.gridform v0.3
+ *
  * Built as jQuery PlugIn for usage with bootstrap 3.x
  * can be overwritten for usage with other libs
  *
+ * (c) Gunnar Thies, 2014
+ * 
  * MIT-License 2014
  *
  */
@@ -26,50 +29,50 @@ var gridform = gridform || {};
 		renderedAtTarget : null,
 		rendered : null,
 		fieldCount : null,
+        //default settings that can be overwritten on prototype level :)
+        defaultSettings: {
+            // These are the defaults.
+            //Debug mode
+            debug : false,
+            //Mode is edit / you can switch to view-mode
+            mode : 'edit',
+            //LabelType: inline vs. over
+            labelType : 'inline',
+            //Alignment of labels; default: right
+            labelAlign : 'right',
+            //directly show error tooltips
+            showTooltipInstantly : false,
+            //where to show the tooltips
+            tooltipOrientation: "bottom",
+            //success should not be shown by green color (if you do not want a rainbow coloured form :))
+            successIsGreen : false,
+            //use font-awesome for checkboxes and radio-buttons
+            useFontAwesome : false,
+            //Icons for the status
+            icon_success : 'glyphicon glyphicon-ok',
+            icon_error : 'glyphicon glyphicon-remove',
+            icon_warning : 'glyphicon glyphicon-warning-sign',
+            icon_waiting : 'glyphicon glyphicon-refresh',
+            //language
+            language : {
+                // this is shown as error message for a mandatory field
+                'mandatoryField' : 'This is a mandatory field',
+                // this is shown when a field is in loading state
+                'loading' : 'Loading ...',
+                // this is the placeholder element in a not yet selected select box
+                'selectPlaceholder' : '-',
+            },
+            //dimensions
+            dimensions : {},
 
-		init : function (settings) {
+        },
+        
+        
 
+		init : function (userSettings) {
+          
 			//Settings
-			this.settings = $.extend({
-					// These are the defaults.
-					//Debug mode
-					debug : false,
-					//Mode is edit / you can switch to view-mode
-					mode : 'edit',
-					//LabelType: inline vs. over
-					labelType : 'inline',
-					//Alignment of labels; default: right
-					labelAlign : 'right',
-					//directly show error tooltips
-					showTooltipInstantly : false,
-                    //where to show the tooltips
-                    tooltipOrientation: "bottom",
-					//success should not be shown by green color (if you do not want a rainbow coloured form :))
-					successIsGreen : false,
-					//use font-awesome for checkboxes and radio-buttons
-					useFontAwesome : false,
-					//Icons for the status
-					icon_success : 'glyphicon glyphicon-ok',
-					icon_error : 'glyphicon glyphicon-remove',
-					icon_warning : 'glyphicon glyphicon-warning-sign',
-					icon_waiting : 'glyphicon glyphicon-refresh',
-					//language
-					language : {
-						'mandatoryField' : 'This is a mandatory field',
-						'loading' : 'Loading ...',
-						'selectPlaceholder' : '-',
-					},
-					//dimensions
-					dimensions : {},
-
-				}, settings);
-
-			//At least a name must be prodived!
-			if (this.settings.name === undefined) {
-				console.error("A 'name' for the gridform is needed!");
-				this.settings = {};
-				return false;
-			}
+			this.settings = $.extend({},this.defaultSettings, userSettings);
 
 			return this;
 
@@ -1061,7 +1064,7 @@ var gridform = gridform || {};
 				var html = '<div class="form-group ' + hasFeedback + '" style="' + width + '">';
 				html += '   <input type="' + type + '" ' + disabled + ' ' + maxLength + ' class="form-control" style="width:100%;" placeholder="' + placeholder + '"></input>';
 				if (hasFeedback !== "") {
-					html += '   <span style="display:none;top:0;" class="glyphicon glyphicon-ok form-control-feedback"></span>';
+					html += '   <span style="display:none;top:0;" class="'+ parent.settings.icon_success +' form-control-feedback"></span>';
 				}
 				html += '</div>';
 				//html += '</form>';
@@ -1133,7 +1136,7 @@ var gridform = gridform || {};
 				var html = '<div class="form-group ' + hasFeedback + '" style="height:100%;' + width + '">';
 				html += '   <textarea type="text" ' + disabled + ' class="form-control" style="width:100%;height:100%;resize: none;" placeholder="' + placeholder + '"></textarea>';
 				if (hasFeedback !== "") {
-					html += '   <span style="display:none;top:0;" class="glyphicon glyphicon-ok form-control-feedback"></span>';
+					html += '   <span style="display:none;top:0;" class="'+ parent.settings.icon_success +' form-control-feedback"></span>';
 				}
 				html += '</div>';
 				//html += '</form>';
@@ -1218,7 +1221,7 @@ var gridform = gridform || {};
 				var html = '<div class="form-group ' + hasFeedback + '" style="' + width + '">';
 				html += '   <select ' + disabled + ' class="form-control" style="width:100%;"></select>';
 				if (hasFeedback !== "") {
-					html += '   <span style="display:none;top:0;" class="glyphicon glyphicon-ok form-control-feedback"></span>';
+					html += '   <span style="display:none;top:0;" class="'+ parent.settings.icon_success +' form-control-feedback"></span>';
 				}
 				html += '</div>';
 				//html += '</form>';
@@ -1585,7 +1588,16 @@ var gridform = gridform || {};
 	gridform.addType = function (type, object) {
 		gridform.types[type] = $.extend({}, mastertype, object);
 	};
-
+    
+    /**
+    * Set the default values for the settings
+    * This can be useful for a standard form for a whole application
+    */
+    gridform.setDefaults = function(settings){
+        //Overwrite the default settings with the given values...
+        gridform.form.prototype.defaultSettings = $.extend({}, gridform.form.prototype.defaultSettings, settings);
+    };
+    
 	/*** add as jquery plugin ****/
 	$.fn.gridform = function (settings) {
 
@@ -1600,9 +1612,13 @@ var gridform = gridform || {};
 		//If the function is called for an already specified target, then render it to that element!
 		if ($(this).length === 1)
 			obj.render(this);
-
-		gridform.forms[settings.name] = obj;
-		return obj;
+        
+        //if no name is given, the object will not be available via direct access like "gridform.forms[<name>]"
+        //but the object is returned here directly...
+		if(settings.name !== undefined){
+            gridform.forms[settings.name] = obj;
+		}
+        return obj;
 
 	};
 

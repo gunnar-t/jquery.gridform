@@ -182,7 +182,7 @@
         
         var fields9 = {'1_1': {'id': 'login', 'label': 'Login', 'type': 'string', 'width': '150px'},
                 '2_1': {'id': 'pwd', 'label': 'Password', 'type': 'string', 'pwd': true, 'width': '150px', 'maxLength': 10,},
-                '3_1': {'id': 'pwdRepeat', 'label': 'Password repeat', 'type': 'string', 'pwd': true, 'maxLength': 10, 'width': '150px'},
+                '3_1': {'id': 'pwdRepeat', 'label': 'Password repeat', 'type': 'string', 'pwd': true, 'maxLength': 10, 'width': '150px'}
              };        
         t9 = $().gridform({
             'name': 'form9',
@@ -193,12 +193,16 @@
         t9.render("#example9");
         
         
-        fields9['3_1'] = {'id': 'product', 'label': 'Product', 'type': 'checkbox','selection': [{key:1,value:'Premium'},{key:2,value:'Gold'},{key:3,value:'Silver'}]};
+        var fields10 = {'1_1': {'id': 'login', 'label': 'Login', 'type': 'string', 'width': '150px'},
+                '2_1': {'id': 'pwd', 'label': 'Password', 'type': 'string', 'pwd': true, 'width': '150px', 'maxLength': 10,},
+                '3_1': {'id': 'product', 'label': 'Product', 'type': 'checkbox','selection': [{key:1,value:'Premium'},{key:2,value:'Gold'},{key:3,value:'Silver'}]}
+             }; 
         
+                
         t10 = $().gridform({
             'name': 'form10',
             'debug': false,
-            'fields': fields9,
+            'fields': fields10,
             'dimensions': {'col_1':{'labelWidth': '120px','contentWidth': "200px"}}
             });
         t10.render("#example10");
