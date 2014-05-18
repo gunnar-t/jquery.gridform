@@ -70,16 +70,9 @@ var gridform = gridform || {};
         
 
 		init : function (userSettings) {
-
+          
 			//Settings
-			this.settings = $.extend(this.defaultSettings, userSettings);
-
-			//At least a name must be prodived!
-			if (this.settings.name === undefined) {
-				console.error("A 'name' for the gridform is needed!");
-				this.settings = {};
-				return false;
-			}
+			this.settings = $.extend({},this.defaultSettings, userSettings);
 
 			return this;
 
@@ -1602,7 +1595,7 @@ var gridform = gridform || {};
     */
     gridform.setDefaults = function(settings){
         //Overwrite the default settings with the given values...
-        gridform.form.prototype.defaultSettings = $.extend(gridform.form.prototype.defaultSettings, settings);
+        gridform.form.prototype.defaultSettings = $.extend({}, gridform.form.prototype.defaultSettings, settings);
     };
     
 	/*** add as jquery plugin ****/
@@ -1619,9 +1612,13 @@ var gridform = gridform || {};
 		//If the function is called for an already specified target, then render it to that element!
 		if ($(this).length === 1)
 			obj.render(this);
-
-		gridform.forms[settings.name] = obj;
-		return obj;
+        
+        //if no name is given, the object will not be available via direct access like "gridform.forms[<name>]"
+        //but the object is returned here directly...
+		if(settings.name !== undefined){
+            gridform.forms[settings.name] = obj;
+		}
+        return obj;
 
 	};
 
