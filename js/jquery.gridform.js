@@ -1,6 +1,6 @@
 var gridform = gridform || {};
 /**
- * jquery.gridform v0.3.1
+ * jquery.gridform v0.3.2
  *
  * Built as jQuery PlugIn for usage with bootstrap 3.x
  * can be overwritten for usage with other libs
@@ -48,6 +48,8 @@ var gridform = gridform || {};
             successIsGreen : false,
             //use font-awesome for checkboxes and radio-buttons
             useFontAwesome : false,
+            //mark mandatory fields by an asterisk
+            markMandatoryFields: true,            
             //Icons for the status
             icon_success : 'glyphicon glyphicon-ok',
             icon_error : 'glyphicon glyphicon-remove',
@@ -68,12 +70,14 @@ var gridform = gridform || {};
         },
         
         
-
+        /**
+        * Init the gridform object
+        */
 		init : function (userSettings) {
           
 			//Settings
 			this.settings = $.extend({},this.defaultSettings, userSettings);
-
+            
 			return this;
 
 		},
@@ -129,6 +133,10 @@ var gridform = gridform || {};
 			return this;
 		},
 
+        /**
+         * Build the html table for the grid
+         *
+         */
 		__buildTable : function (debugOptions) {
 
 			//Check how many rows and cols we need
@@ -943,7 +951,12 @@ var gridform = gridform || {};
 
 			//var html = '<form class="form-inline" style="display:inline;text-align:right;">';
 			var html = '<div class="form-group" style="display:inline;">';
-			html += '   <label class="control-label">' + data.label + '</label>';
+			html += '   <label class="control-label">' + data.label;
+            //Mark mandatory fields with an asterisk
+            if(parent.settings.markMandatoryFields === true && data.mandatory === true){
+                html += ' *';
+            }
+            html +=     '</label>';
 			html += '</div>';
 			//html += '</form>';
 

@@ -1,0 +1,8 @@
+Version 0.3.2
+ - Option "markMandatoryFields" added to mark the mandatory fields by an asterisk
+
+Version 0.3.1 
+ - "hasFocus" can be configured to one field of the form  to set the focus
+ 
+Version 0.3
+ - Initial release

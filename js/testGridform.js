@@ -70,6 +70,7 @@ $(document).ready(function(){
             'icon_waiting': 'fa fa-spinner fa-spin',
             'showTooltipInstantly': false,
             'successIsGreen': true,
+            'markMandatoryFields': true,
                         
              
         });
@@ -77,14 +78,12 @@ $(document).ready(function(){
         
         //t.render("#test1",{showCellNames:true});
 
-        //Handler auf das Element setzen
+        //Set handler to the element
         $(t).bind("rendered",function(e, data){
             console.log(data);
             console.log("das Event 'render' meldet, dass ich zum "+ data.rendered + " mal gerendert wurde....");
         });
         
-        
-        //Handler auf das Element setzen
         $(t).bind("validated",function(e, data){
             console.log(data);
         });
