@@ -1,6 +1,6 @@
 var gridform = gridform || {};
 /**
- * jquery.gridform v0.3
+ * jquery.gridform v0.3.2
  *
  * Built as jQuery PlugIn for usage with bootstrap 3.x
  * can be overwritten for usage with other libs
@@ -48,6 +48,8 @@ var gridform = gridform || {};
             successIsGreen : false,
             //use font-awesome for checkboxes and radio-buttons
             useFontAwesome : false,
+            //mark mandatory fields by an asterisk
+            markMandatoryFields: true,            
             //Icons for the status
             icon_success : 'glyphicon glyphicon-ok',
             icon_error : 'glyphicon glyphicon-remove',
@@ -68,12 +70,14 @@ var gridform = gridform || {};
         },
         
         
-
+        /**
+        * Init the gridform object
+        */
 		init : function (userSettings) {
           
 			//Settings
 			this.settings = $.extend({},this.defaultSettings, userSettings);
-
+            
 			return this;
 
 		},
@@ -129,12 +133,18 @@ var gridform = gridform || {};
 			return this;
 		},
 
+        /**
+         * Build the html table for the grid
+         *
+         */
 		__buildTable : function (debugOptions) {
 
 			//Check how many rows and cols we need
 			this.cols = 0;
 			this.rows = 0;
 			var fields = {};
+            this.focusOnField = null;
+            
 
 			for (var x in this.settings.fields) {
 				//Get row and col by splitting the key at the _
@@ -161,6 +171,16 @@ var gridform = gridform || {};
 				} else {
 					//Add the field
 					this.fieldsById[this.settings.fields[x].id] = this.settings.fields[x];
+                    
+                    //check if this field wants the focus
+                    if(this.settings.fields[x].hasFocus === true){
+                        if(this.focusOnField === null){
+                            this.focusOnField = this.settings.fields[x].id;
+                        } else {
+                            console.error("Focus is already configured for field '"+this.focusOnField+"'.");
+                        }
+                    }
+                    
 					//counter for the number of fields (if the can be validated and contain data)
 					if (gridform.types[this.settings.fields[x].type] !== undefined && gridform.types[this.settings.fields[x].type].containsData === true) {
 						this.fieldCount++;
@@ -474,6 +494,11 @@ var gridform = gridform || {};
 				} else {
 					console.error("No rendering function for type " + type);
 				}
+                
+                //Set a focus (if configured)
+                if(this.focusOnField !== null){
+                    this.getElement(this.focusOnField).focus();
+                }                
                 
 				//Are there functions for some methods after adding the grid, label and contents to the DOM
 				//e.g. Event Handler, async loadable Selection-Options, etc....
@@ -926,7 +951,12 @@ var gridform = gridform || {};
 
 			//var html = '<form class="form-inline" style="display:inline;text-align:right;">';
 			var html = '<div class="form-group" style="display:inline;">';
-			html += '   <label class="control-label">' + data.label + '</label>';
+			html += '   <label class="control-label">' + data.label;
+            //Mark mandatory fields with an asterisk
+            if(parent.settings.markMandatoryFields === true && data.mandatory === true){
+                html += ' *';
+            }
+            html +=     '</label>';
 			html += '</div>';
 			//html += '</form>';
 
