@@ -569,10 +569,12 @@ elem.on("focus", function () {
             </ul>
         </p>
         
+               
+        
 <pre><code class="language-javascript">// Very simple custom date function
 gridform.addType("date", {
 	// a simple render function
-	render : function () {
+	render : function (data, cellSelector, parent) {
 		var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
 		return '&lt;input ' + disabled + ' type="text" class="form-control"&gt;&lt;/input&gt;';
 	},
