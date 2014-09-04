@@ -1,3 +1,6 @@
+Version 0.3.3
+ - Added docs (jsdoc) for the library
+
 Version 0.3.2
  - Option "markMandatoryFields" added to mark the mandatory fields by an asterisk
 

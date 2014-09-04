@@ -1,4 +1,31 @@
-/** @namespace */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: jquery.gridform.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: jquery.gridform.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** @namespace */
 var gridform = gridform || {};
 /**
  * jquery.gridform v0.3.3
@@ -113,7 +140,7 @@ var gridform = gridform || {};
 					target = target.selector;
 			}
 			//Try to search for a given element (if not undefined)
-			if (target !== undefined && $(target).length !== 1)
+			if (target !== undefined &amp;&amp; $(target).length !== 1)
 				return false;
 			//Target or predefined setting
 			this.settings.target = (target !== undefined) ? target : this.settings.target;
@@ -195,7 +222,7 @@ var gridform = gridform || {};
 					}
 
 					//counter for the number of fields (if the can be validated and contain data)
-					if (gridform.types[this.settings.fields[x].type] !== undefined && gridform.types[this.settings.fields[x].type].containsData === true) {
+					if (gridform.types[this.settings.fields[x].type] !== undefined &amp;&amp; gridform.types[this.settings.fields[x].type].containsData === true) {
 						this.fieldCount++;
 					}
 				}
@@ -207,7 +234,7 @@ var gridform = gridform || {};
 			var spannedCells = {};
 
 			var showCellNames = false;
-			if (debugOptions !== undefined && debugOptions.showCellNames === true) {
+			if (debugOptions !== undefined &amp;&amp; debugOptions.showCellNames === true) {
 				showCellNames = true;
 			}
 
@@ -219,28 +246,28 @@ var gridform = gridform || {};
 			}
 
 			//Build the table
-			var html = '<table class="gridform" border=0 ><tbody>';
+			var html = '&lt;table class="gridform" border=0 >&lt;tbody>';
 
 			if (this.settings.labelType === "inline") {
 
 				//Build an empty row to set the column widths as set by the settings
-				html += '<tr>';
-				for (var c = 1; c <= this.cols; c++) {
+				html += '&lt;tr>';
+				for (var c = 1; c &lt;= this.cols; c++) {
 					var labelWidth = '';
 					var contentWidth = '';
 					if (this.settings.dimensions['col_' + c] !== undefined) {
 						labelWidth = (this.settings.dimensions['col_' + c].labelWidth !== undefined) ? 'width:' + this.settings.dimensions['col_' + c].labelWidth : '';
 						contentWidth = (this.settings.dimensions['col_' + c].contentWidth !== undefined) ? 'width:' + this.settings.dimensions['col_' + c].contentWidth : '';
 					}
-					html += '<td style="' + labelWidth + '"></td>';
-					html += '<td style="' + contentWidth + '"></td>';
+					html += '&lt;td style="' + labelWidth + '">&lt;/td>';
+					html += '&lt;td style="' + contentWidth + '">&lt;/td>';
 				}
-				html += '</tr>';
+				html += '&lt;/tr>';
 
-				for (var r = 1; r <= this.rows; r++) {
+				for (var r = 1; r &lt;= this.rows; r++) {
 					//Build all cells in that row
-					html += '<tr>';
-					for (var c = 1; c <= this.cols; c++) {
+					html += '&lt;tr>';
+					for (var c = 1; c &lt;= this.cols; c++) {
 						//Row and col identifier
 						var rc = r + '_' + c;
 
@@ -253,10 +280,10 @@ var gridform = gridform || {};
 							}
 
 							//No field configured ... empty cells
-							html += '<td data-id="' + rc + '" class="gridform_content" colspan="2">';
+							html += '&lt;td data-id="' + rc + '" class="gridform_content" colspan="2">';
 							if (showCellNames)
 								html += rc;
-							html += '</td>';
+							html += '&lt;/td>';
 						} else {
 
 							//There is a field, therefore (if a label is configured) place for a label and a field-container
@@ -277,9 +304,9 @@ var gridform = gridform || {};
 							}
 
 							//If there is some rowspan, then the next rows (that are "spanned") needs to be ignored
-							for (var x = r; x < (r + rowspan); x++) {
+							for (var x = r; x &lt; (r + rowspan); x++) {
 								//If there is some colspan, then the next cells (that are "spanned") needs to be ignored
-								for (var y = c; y < c + colspan; y++) {
+								for (var y = c; y &lt; c + colspan; y++) {
 									if (this.settings.debug)
 										console.log("The cell " + x + '_' + y + " is filled by field '" + this.settings.fields[rc].id + "'");
 									spannedCells[x + '_' + y] = this.settings.fields[rc].id;
@@ -292,55 +319,55 @@ var gridform = gridform || {};
 
 							//Place for an label
 							//is a label allowed for the type?
-							var labelAllowed = (gridform.types[this.settings.fields[rc].type] !== undefined && gridform.types[this.settings.fields[rc].type].labelAllowed === false) ? false : true;
+							var labelAllowed = (gridform.types[this.settings.fields[rc].type] !== undefined &amp;&amp; gridform.types[this.settings.fields[rc].type].labelAllowed === false) ? false : true;
 
 							if (this.settings.fields[rc].label === undefined || labelAllowed === false) {
 								//colspan plus one (there is no label!)
 								colspan++;
-								html += '<td data-id="' + rc + '" class="gridform_content" colspan="' + colspan + '" rowspan="' + rowspan + '">';
+								html += '&lt;td data-id="' + rc + '" class="gridform_content" colspan="' + colspan + '" rowspan="' + rowspan + '">';
 								if (showCellNames)
 									html += rc;
-								html += '</td>';
+								html += '&lt;/td>';
 							} else {
 								//Label and ... field
 
-								html += '<td data-id="' + rc + '" class="gridform_label" style="text-align:' + labelAlign + ';" rowspan="' + rowspan + '">';
+								html += '&lt;td data-id="' + rc + '" class="gridform_label" style="text-align:' + labelAlign + ';" rowspan="' + rowspan + '">';
 								if (showCellNames)
-									html += '<small>' + rc + ': ' + this.settings.fields[rc].label + '</small>';
-								html += '</td>';
+									html += '&lt;small>' + rc + ': ' + this.settings.fields[rc].label + '&lt;/small>';
+								html += '&lt;/td>';
 								//Field
-								html += '<td data-id="' + rc + '" class="gridform_content" style="height:100%;vertical-align:top;" colspan="' + colspan + '" rowspan="' + rowspan + '">';
+								html += '&lt;td data-id="' + rc + '" class="gridform_content" style="height:100%;vertical-align:top;" colspan="' + colspan + '" rowspan="' + rowspan + '">';
 								if (showCellNames)
-									html += '<small>' + rc + ': field ' + this.settings.fields[rc].id + '</small>';
-								html += '</td>';
+									html += '&lt;small>' + rc + ': field ' + this.settings.fields[rc].id + '&lt;/small>';
+								html += '&lt;/td>';
 							}
 
 						}
 
 					}
-					html += '</tr>';
+					html += '&lt;/tr>';
 
 				}
 			} else if (this.settings.labelType === "over") {
 
 				//Build an empty row to set the column widths as set by the settings (just take a look at the contentWidths)
-				html += '<tr>';
-				for (var c = 1; c <= this.cols; c++) {
+				html += '&lt;tr>';
+				for (var c = 1; c &lt;= this.cols; c++) {
 					var contentWidth = '';
 					if (this.settings.dimensions['col_' + c] !== undefined) {
 						contentWidth = (this.settings.dimensions['col_' + c].contentWidth !== undefined) ? 'width:' + this.settings.dimensions['col_' + c].contentWidth : '';
 					}
-					html += '<td style="' + contentWidth + '"></td>';
+					html += '&lt;td style="' + contentWidth + '">&lt;/td>';
 				}
-				html += '</tr>';
+				html += '&lt;/tr>';
 
-				for (var r = 1; r <= this.rows; r++) {
+				for (var r = 1; r &lt;= this.rows; r++) {
 
 					//Build all cells in that row
-					//This is always two <tr> per logical ROW
+					//This is always two &lt;tr> per logical ROW
 
-					html += '<tr>';
-					for (var c = 1; c <= this.cols; c++) {
+					html += '&lt;tr>';
+					for (var c = 1; c &lt;= this.cols; c++) {
 						//Row and col identifier
 						var rc = r + '_' + c;
 
@@ -352,10 +379,10 @@ var gridform = gridform || {};
 								continue;
 							}
 							//No field configured ... empty cells (label and content-area therefore rowspan:2)
-							html += '<td data-id="' + rc + '" class="gridform_content" rowspan="2">';
+							html += '&lt;td data-id="' + rc + '" class="gridform_content" rowspan="2">';
 							if (showCellNames)
 								html += rc;
-							html += '</td>';
+							html += '&lt;/td>';
 
 						} else {
 
@@ -377,9 +404,9 @@ var gridform = gridform || {};
 							}
 
 							//If there is some rowspan, then the next rows (that are "spanned") needs to be ignored
-							for (var x = r; x < (r + rowspan); x++) {
+							for (var x = r; x &lt; (r + rowspan); x++) {
 								//If there is some colspan, then the next cells (that are "spanned") needs to be ignored
-								for (var y = c; y < c + colspan; y++) {
+								for (var y = c; y &lt; c + colspan; y++) {
 									if (this.settings.debug)
 										console.log("The cell " + x + '_' + y + " is filled by field content '" + this.settings.fields[rc].id + "'");
 									spannedCells[x + '_' + y] = this.settings.fields[rc];
@@ -388,33 +415,33 @@ var gridform = gridform || {};
 
 							//Place for an label
 							//is a label allowed for the type?
-							var labelAllowed = (gridform.types[this.settings.fields[rc].type] !== undefined && gridform.types[this.settings.fields[rc].type].labelAllowed === false) ? false : true;
+							var labelAllowed = (gridform.types[this.settings.fields[rc].type] !== undefined &amp;&amp; gridform.types[this.settings.fields[rc].type].labelAllowed === false) ? false : true;
 
 							if (this.settings.fields[rc].label === undefined || labelAllowed === false) {
 
 								//Rowspan is here now the configured rowspan * 2 (there is no label)
-								html += '<td data-id="' + rc + '" class="gridform_content" colspan="' + colspan + '" rowspan="' + (rowspan * 2) + '">';
+								html += '&lt;td data-id="' + rc + '" class="gridform_content" colspan="' + colspan + '" rowspan="' + (rowspan * 2) + '">';
 								if (showCellNames)
 									html += rc;
-								html += '</td>';
+								html += '&lt;/td>';
 
 							} else {
 								//Label
-								html += '<td data-id="' + rc + '" class="gridform_label" style="text-align:' + labelAlign + ';" colspan="' + colspan + '">';
+								html += '&lt;td data-id="' + rc + '" class="gridform_label" style="text-align:' + labelAlign + ';" colspan="' + colspan + '">';
 								if (showCellNames)
-									html += '<small>' + rc + ': ' + this.settings.fields[rc].label + '</small>';
-								html += '</td>';
+									html += '&lt;small>' + rc + ': ' + this.settings.fields[rc].label + '&lt;/small>';
+								html += '&lt;/td>';
 
 							}
 
 						}
 
 					}
-					html += '</tr>';
+					html += '&lt;/tr>';
 
 					//Build all cells in that row with field content
-					html += '<tr>';
-					for (var c = 1; c <= this.cols; c++) {
+					html += '&lt;tr>';
+					for (var c = 1; c &lt;= this.cols; c++) {
 						//Row and col identifier
 						var rc = r + '_' + c;
 
@@ -422,17 +449,17 @@ var gridform = gridform || {};
 						if (this.settings.fields[rc] !== undefined) {
 
 							//There is a field, therefore (if a label is configured) place for a label and a field-container
-							if (spannedCells[rc] !== undefined && this.settings.fields[rc] !== spannedCells[rc]) {
+							if (spannedCells[rc] !== undefined &amp;&amp; this.settings.fields[rc] !== spannedCells[rc]) {
 								//Sorry, but this field cannot be placed here?!
 								console.error("The field '" + this.settings.fields[rc].id + "' cannot be placed at '" + rc + "'. This cell is filled by field '" + spannedCells[rc].id + "'");
 								continue;
 							}
 
 							//is a label allowed for the type?
-							var labelAllowed = (gridform.types[this.settings.fields[rc].type] !== undefined && gridform.types[this.settings.fields[rc].type].labelAllowed === false) ? false : true;
+							var labelAllowed = (gridform.types[this.settings.fields[rc].type] !== undefined &amp;&amp; gridform.types[this.settings.fields[rc].type].labelAllowed === false) ? false : true;
 
 							//If a label is existing and was added, then here the content field needs to be added
-							if (this.settings.fields[rc].label !== undefined && labelAllowed === true) {
+							if (this.settings.fields[rc].label !== undefined &amp;&amp; labelAllowed === true) {
 
 								//Has the field a colspan ?!
 								var colspan = 1;
@@ -446,22 +473,22 @@ var gridform = gridform || {};
 								}
 
 								//Field
-								html += '<td data-id="' + rc + '" class="gridform_content" style="height:100%;vertical-align:top;" colspan="' + colspan + '" rowspan="' + ((rowspan * 2) - 1) + '">';
+								html += '&lt;td data-id="' + rc + '" class="gridform_content" style="height:100%;vertical-align:top;" colspan="' + colspan + '" rowspan="' + ((rowspan * 2) - 1) + '">';
 								if (showCellNames)
-									html += '<small>' + rc + ': field ' + this.settings.fields[rc].id + '</small>';
-								html += '</td>';
+									html += '&lt;small>' + rc + ': field ' + this.settings.fields[rc].id + '&lt;/small>';
+								html += '&lt;/td>';
 							}
 
 						}
 
 					}
-					html += '</tr>';
+					html += '&lt;/tr>';
 
 				}
 
 			}
 
-			html += '</tbody></table>';
+			html += '&lt;/tbody>&lt;/table>';
 
 			return html;
 
@@ -475,7 +502,7 @@ var gridform = gridform || {};
 		 */
 		__buildContents : function (debugOptions) {
 
-			if (debugOptions !== undefined && debugOptions.showCellNames === true) {
+			if (debugOptions !== undefined &amp;&amp; debugOptions.showCellNames === true) {
 				return;
 			}
 
@@ -489,7 +516,7 @@ var gridform = gridform || {};
 				var cellSelectorContent = this.settings.target + ' td[data-id=' + x + '].gridform_content';
 
 				//Is there is an internal function for that type
-				if (gridform.types[type] !== undefined && typeof gridform.types[type]['setLabel'] === "function") {
+				if (gridform.types[type] !== undefined &amp;&amp; typeof gridform.types[type]['setLabel'] === "function") {
 					//Call that function (will return a string or false => then the method itself will render something ...)
 					var html = gridform.types[type]['setLabel'](field, cellSelectorLabel, this);
 					if (typeof html === "string") {
@@ -500,7 +527,7 @@ var gridform = gridform || {};
 				}
 
 				//Is there is an internal function for that type
-				if (gridform.types[type] !== undefined && typeof gridform.types[type]['render'] === "function") {
+				if (gridform.types[type] !== undefined &amp;&amp; typeof gridform.types[type]['render'] === "function") {
 					//Call that function (will return a string or false => then the method itself will render something ...)
 					var html = gridform.types[type]['render'](field, cellSelectorContent, this);
 					if (typeof html === "string") {
@@ -517,12 +544,12 @@ var gridform = gridform || {};
 
 				//Are there functions for some methods after adding the grid, label and contents to the DOM
 				//e.g. Event Handler, async loadable Selection-Options, etc....
-				if (gridform.types[type] !== undefined && typeof gridform.types[type]['afterDOMCreation'] === "function") {
+				if (gridform.types[type] !== undefined &amp;&amp; typeof gridform.types[type]['afterDOMCreation'] === "function") {
 					gridform.types[type]['afterDOMCreation'](field, cellSelectorContent, this);
 				}
 				var that = this;
 				//Maybe the option "validateOnBlur" is set, so get the element and attach the validation method to the blur event!
-				if (field.validateOnBlur === true && (field.mandatory === true || typeof field.validate === "function")) {
+				if (field.validateOnBlur === true &amp;&amp; (field.mandatory === true || typeof field.validate === "function")) {
 					//get the element
 					var elem = this.getElement(field.id);
 					//wrap that event handler in a lambda function for correct scope
@@ -557,7 +584,7 @@ var gridform = gridform || {};
 					//Cell-selector
 					var cellSelector = this.settings.target + ' td[data-id=' + field.row + '_' + field.col + '].gridform_content';
 					//Is there an internal function for that type
-					if (gridform.types[type] !== undefined && typeof gridform.types[type]['set'] === "function") {
+					if (gridform.types[type] !== undefined &amp;&amp; typeof gridform.types[type]['set'] === "function") {
 						//Call that function
 						gridform.types[type]['set'](this.fieldsById[x], record[x], cellSelector, this);
 					} else {
@@ -575,7 +602,7 @@ var gridform = gridform || {};
 		 */
 		switchMode : function (mode) {
 
-			if (mode !== "edit" && mode !== "view")
+			if (mode !== "edit" &amp;&amp; mode !== "view")
 				return false;
 
 			if (mode !== this.mode) {
@@ -600,7 +627,7 @@ var gridform = gridform || {};
 
 			var cellSelectorContent = this.settings.target + ' td[data-id=' + field.row + '_' + field.col + '].gridform_content';
 
-			if (gridform.types[field.type] !== undefined && typeof gridform.types[field.type]['getFieldNode'] === "function") {
+			if (gridform.types[field.type] !== undefined &amp;&amp; typeof gridform.types[field.type]['getFieldNode'] === "function") {
 				//Call that function
 				return gridform.types[field.type]['getFieldNode'](field, cellSelectorContent, this);
 			} else {
@@ -630,7 +657,7 @@ var gridform = gridform || {};
 			var cellSelectorLabel = this.settings.target + ' td[data-id=' + field.row + '_' + field.col + '].gridform_label';
 			var cellSelectorContent = this.settings.target + ' td[data-id=' + field.row + '_' + field.col + '].gridform_content';
 
-			if (gridform.types[field.type] !== undefined && typeof gridform.types[field.type]['set' + type] === "function") {
+			if (gridform.types[field.type] !== undefined &amp;&amp; typeof gridform.types[field.type]['set' + type] === "function") {
 				//Call that function
 				gridform.types[field.type]['set' + type](field, message, cellSelectorLabel, cellSelectorContent, this);
 			} else {
@@ -698,7 +725,7 @@ var gridform = gridform || {};
 				var cellSelectorLabel = that.settings.target + ' td[data-id=' + field.row + '_' + field.col + '].gridform_label';
 				var cellSelectorContent = that.settings.target + ' td[data-id=' + field.row + '_' + field.col + '].gridform_content';
 
-				if (gridform.types[field.type] !== undefined && typeof gridform.types[field.type]['resetFieldMark'] === "function") {
+				if (gridform.types[field.type] !== undefined &amp;&amp; typeof gridform.types[field.type]['resetFieldMark'] === "function") {
 					//Call that function
 					gridform.types[field.type]['resetFieldMark'](field, cellSelectorLabel, cellSelectorContent, that);
 				} else {
@@ -746,7 +773,7 @@ var gridform = gridform || {};
 				var cellSelector = that.settings.target + ' td[data-id=' + field.row + '_' + field.col + '].gridform_content';
 
 				//Is there an internal function for that type
-				if (gridform.types[type] !== undefined && typeof gridform.types[type]['flush'] === "function") {
+				if (gridform.types[type] !== undefined &amp;&amp; typeof gridform.types[type]['flush'] === "function") {
 					//Call that function
 					gridform.types[type]['flush'](cellSelector, that);
 				}
@@ -785,11 +812,11 @@ var gridform = gridform || {};
 				var cellSelector = that.settings.target + ' td[data-id=' + field.row + '_' + field.col + '].gridform_content';
 
 				//Does that type contain data?
-				if (gridform.types[type] !== undefined && gridform.types[type].containsData === false)
+				if (gridform.types[type] !== undefined &amp;&amp; gridform.types[type].containsData === false)
 					return undefined;
 
 				//Is there an internal function for that type
-				if (gridform.types[type] !== undefined && typeof gridform.types[type]['get'] === "function") {
+				if (gridform.types[type] !== undefined &amp;&amp; typeof gridform.types[type]['get'] === "function") {
 					//Call that function
 					return gridform.types[type]['get'](field, cellSelector);
 				}
@@ -848,9 +875,9 @@ var gridform = gridform || {};
 
 				var value = that.getData(field.id);
 				//Mandatory field
-				if (field.mandatory === true &&
+				if (field.mandatory === true &amp;&amp;
 					(value === "" || value === null || value === undefined ||
-						(typeof value === "object" && value.length === 0))) {
+						(typeof value === "object" &amp;&amp; value.length === 0))) {
 					that.setError(id, that.settings.language.mandatoryField);
 					that.valid = false;
 					valid = false;
@@ -928,7 +955,7 @@ var gridform = gridform || {};
 				} else {
 
 					//Is there an internal function for that type
-					if (gridform.types[type] !== undefined && typeof gridform.types[type]['validate'] === "function") {
+					if (gridform.types[type] !== undefined &amp;&amp; typeof gridform.types[type]['validate'] === "function") {
 						//Call that function
 						var valid = gridform.types[type]['validate'](field, cellSelector);
 						if (valid !== true) {
@@ -1005,7 +1032,7 @@ var gridform = gridform || {};
 				var cellSelector = that.settings.target + ' td[data-id=' + field.row + '_' + field.col + '].gridform_content';
 
 				//Is there an internal function for that type
-				if (gridform.types[type] !== undefined && typeof gridform.types[type]['enable'] === "function") {
+				if (gridform.types[type] !== undefined &amp;&amp; typeof gridform.types[type]['enable'] === "function") {
 					//Call that function
 					gridform.types[type]['enable'](field, enable, cellSelector);
 				}
@@ -1049,16 +1076,16 @@ var gridform = gridform || {};
 		 */
 		setLabel : function (data, cellSelectorLabel, parent) {
 
-			//var html = '<form class="form-inline" style="display:inline;text-align:right;">';
-			var html = '<div class="form-group" style="display:inline;">';
-			html += '   <label class="control-label">' + data.label;
+			//var html = '&lt;form class="form-inline" style="display:inline;text-align:right;">';
+			var html = '&lt;div class="form-group" style="display:inline;">';
+			html += '   &lt;label class="control-label">' + data.label;
 			//Mark mandatory fields with an asterisk
-			if (parent.settings.markMandatoryFields === true && data.mandatory === true) {
+			if (parent.settings.markMandatoryFields === true &amp;&amp; data.mandatory === true) {
 				html += ' *';
 			}
-			html += '</label>';
-			html += '</div>';
-			//html += '</form>';
+			html += '&lt;/label>';
+			html += '&lt;/div>';
+			//html += '&lt;/form>';
 
 			return html;
 
@@ -1152,7 +1179,7 @@ var gridform = gridform || {};
 		setStatus : function (field, type, cellSelectorLabel, cellSelectorContent, parent) {
 
 			//if the status is "success" but the setting "successIsGreen" is false, do not add a success class (that is coloured)
-			if (type === "success" && parent.settings.successIsGreen === false) {}
+			if (type === "success" &amp;&amp; parent.settings.successIsGreen === false) {}
 			else {
 				$(cellSelectorLabel).find("div.form-group").addClass("has-" + type);
 				$(cellSelectorContent).find("div.form-group").addClass("has-" + type);
@@ -1296,21 +1323,21 @@ var gridform = gridform || {};
         render : function (data, cellSelector, parent) {
 
             //Simple input text
-            var disabled = (parent.settings.mode === "edit" && data.readonly !== true) ? '' : 'disabled';
+            var disabled = (parent.settings.mode === "edit" &amp;&amp; data.readonly !== true) ? '' : 'disabled';
             var hasFeedback = (data.hasFeedback === true) ? 'has-feedback' : '';
             var width = (data.width !== undefined) ? 'width:' + data.width : '';
             var type = (data.pwd === true) ? 'password' : 'text';
             var placeholder = (data.placeholder !== undefined) ? data.placeholder : '';
             var maxLength = (data.maxLength !== undefined) ? 'maxlength="' + parseInt(data.maxLength, 10) + '"' : '';
 
-            //var html = '<form class="form-inline" role="form" style="">';
-            var html = '<div class="form-group ' + hasFeedback + '" style="' + width + '">';
-            html += '   <input type="' + type + '" ' + disabled + ' ' + maxLength + ' class="form-control" style="width:100%;" placeholder="' + placeholder + '"></input>';
+            //var html = '&lt;form class="form-inline" role="form" style="">';
+            var html = '&lt;div class="form-group ' + hasFeedback + '" style="' + width + '">';
+            html += '   &lt;input type="' + type + '" ' + disabled + ' ' + maxLength + ' class="form-control" style="width:100%;" placeholder="' + placeholder + '">&lt;/input>';
             if (hasFeedback !== "") {
-                html += '   <span style="display:none;top:0;" class="' + parent.settings.icon_success + ' form-control-feedback"></span>';
+                html += '   &lt;span style="display:none;top:0;" class="' + parent.settings.icon_success + ' form-control-feedback">&lt;/span>';
             }
-            html += '</div>';
-            //html += '</form>';
+            html += '&lt;/div>';
+            //html += '&lt;/form>';
 
             return html;
 
@@ -1375,14 +1402,14 @@ var gridform = gridform || {};
             var width = (data.width !== undefined) ? 'width:' + data.width : '';
             var placeholder = (data.placeholder !== undefined) ? data.placeholder : '';
 
-            //var html = '<form class="form-inline" role="form" style="height:100%;">';
-            var html = '<div class="form-group ' + hasFeedback + '" style="height:100%;' + width + '">';
-            html += '   <textarea type="text" ' + disabled + ' class="form-control" style="width:100%;height:100%;resize: none;" placeholder="' + placeholder + '"></textarea>';
+            //var html = '&lt;form class="form-inline" role="form" style="height:100%;">';
+            var html = '&lt;div class="form-group ' + hasFeedback + '" style="height:100%;' + width + '">';
+            html += '   &lt;textarea type="text" ' + disabled + ' class="form-control" style="width:100%;height:100%;resize: none;" placeholder="' + placeholder + '">&lt;/textarea>';
             if (hasFeedback !== "") {
-                html += '   <span style="display:none;top:0;" class="' + parent.settings.icon_success + ' form-control-feedback"></span>';
+                html += '   &lt;span style="display:none;top:0;" class="' + parent.settings.icon_success + ' form-control-feedback">&lt;/span>';
             }
-            html += '</div>';
-            //html += '</form>';
+            html += '&lt;/div>';
+            //html += '&lt;/form>';
 
             return html;
 
@@ -1459,14 +1486,14 @@ var gridform = gridform || {};
             var hasFeedback = (data.hasFeedback === true) ? 'has-feedback' : '';
             var width = (data.width !== undefined) ? 'width:' + data.width : '';
 
-            //var html = '<form class="form-inline" role="form">';
-            var html = '<div class="form-group ' + hasFeedback + '" style="' + width + '">';
-            html += '   <select ' + disabled + ' class="form-control" style="width:100%;"></select>';
+            //var html = '&lt;form class="form-inline" role="form">';
+            var html = '&lt;div class="form-group ' + hasFeedback + '" style="' + width + '">';
+            html += '   &lt;select ' + disabled + ' class="form-control" style="width:100%;">&lt;/select>';
             if (hasFeedback !== "") {
-                html += '   <span style="display:none;top:0;" class="' + parent.settings.icon_success + ' form-control-feedback"></span>';
+                html += '   &lt;span style="display:none;top:0;" class="' + parent.settings.icon_success + ' form-control-feedback">&lt;/span>';
             }
-            html += '</div>';
-            //html += '</form>';
+            html += '&lt;/div>';
+            //html += '&lt;/form>';
 
             return html;
 
@@ -1525,12 +1552,12 @@ var gridform = gridform || {};
 
                 //Placeholder without value
                 if (data.withoutPlaceholder !== true) {
-                    elem.append('<option value="">' + parent.settings.language.selectPlaceholder + '</option>');
+                    elem.append('&lt;option value="">' + parent.settings.language.selectPlaceholder + '&lt;/option>');
                 }
 
                 for (var x in selection) {
                     var selected = (data.selected == selection[x].key) ? 'selected' : '';
-                    elem.append('<option ' + selected + ' value="' + selection[x].key + '">' + selection[x].value + '</option>');
+                    elem.append('&lt;option ' + selected + ' value="' + selection[x].key + '">' + selection[x].value + '&lt;/option>');
                 }
                 //if the field was set to waiting...then reset the status
                 if ($(cellSelector).find("div.form-group").data("status") === "waiting") {
@@ -1548,7 +1575,7 @@ var gridform = gridform || {};
                 //Before set the field to waiting ... until it gets the data (maybe a async call to a backend ...)
                 parent.setWaiting(data.id);
                 var elem = $(cellSelector).find("select");
-                elem.append('<option value="" selected>' + parent.settings.language.loading + '</option>');
+                elem.append('&lt;option value="" selected>' + parent.settings.language.loading + '&lt;/option>');
 
                 data.selection(fillDataInSelect);
 
@@ -1573,19 +1600,19 @@ var gridform = gridform || {};
             //inline vs normal
             var extraStyle = (data.inline === true) ? 'display:inline-block;padding-right:10px;' : '';
 
-            var html = '<div class="form-group">';
+            var html = '&lt;div class="form-group">';
 
             for (var x in data.selection) {
                 var uniqueId = parent.settings.name + '_' + data.id + '_' + x;
-                html += '<div class="radio ' + fontA + '" style="' + extraStyle + '">';
-                html += '<input type="radio" class="' + fontA + '" id="' + uniqueId + '" ' + disabled + ' name="' + data.id + '_radios" value="' + data.selection[x].key + '">';
-                html += '<label class="' + disabled + '" for="' + uniqueId + '">';
+                html += '&lt;div class="radio ' + fontA + '" style="' + extraStyle + '">';
+                html += '&lt;input type="radio" class="' + fontA + '" id="' + uniqueId + '" ' + disabled + ' name="' + data.id + '_radios" value="' + data.selection[x].key + '">';
+                html += '&lt;label class="' + disabled + '" for="' + uniqueId + '">';
                 html += data.selection[x].value;
-                html += '</label>';
-                html += '</div>';
+                html += '&lt;/label>';
+                html += '&lt;/div>';
             }
 
-            html += '</div>';
+            html += '&lt;/div>';
 
             return html;
 
@@ -1646,20 +1673,20 @@ var gridform = gridform || {};
             //inline vs normal
             var extraStyle = (data.inline === true) ? 'display:inline-block;padding-right:10px;' : '';
 
-            var html = '<div class="form-group">';
+            var html = '&lt;div class="form-group">';
 
             for (var x in data.selection) {
                 var uniqueId = parent.settings.name + '_' + data.id + '_' + x;
-                html += '<div class="checkbox ' + fontA + '" style="' + extraStyle + '">';
+                html += '&lt;div class="checkbox ' + fontA + '" style="' + extraStyle + '">';
 
-                html += '<input type="checkbox" class="' + fontA + '" id="' + uniqueId + '" ' + disabled + ' name="' + data.selection[x].key + '" value="' + data.selection[x].key + '"> ';
-                html += '<label class="' + disabled + '" for="' + uniqueId + '">';
+                html += '&lt;input type="checkbox" class="' + fontA + '" id="' + uniqueId + '" ' + disabled + ' name="' + data.selection[x].key + '" value="' + data.selection[x].key + '"> ';
+                html += '&lt;label class="' + disabled + '" for="' + uniqueId + '">';
                 html += data.selection[x].value;
-                html += '</label>';
-                html += '</div>';
+                html += '&lt;/label>';
+                html += '&lt;/div>';
             }
 
-            html += '</div>';
+            html += '&lt;/div>';
 
             return html;
 
@@ -1684,7 +1711,7 @@ var gridform = gridform || {};
         get : function (data, cellSelector) {
             var boxes = $(cellSelector).find("input:checked");
             var data = [];
-            for (var x = 0; x < boxes.length; x++) {
+            for (var x = 0; x &lt; boxes.length; x++) {
                 data.push($(boxes[x]).val());
             }
             return data;
@@ -1737,13 +1764,13 @@ var gridform = gridform || {};
             //Should font-Awesome be used?
             var fontA = (parent.settings.useFontAwesome === true) ? 'fontA' : '';
 
-            var html = '<div class="form-group">';
+            var html = '&lt;div class="form-group">';
 
             var uniqueId = parent.settings.name + '_' + data.id;
-            html += '<div class="checkbox ' + fontA + '">';
-            html += '<input type="checkbox" class="' + fontA + '" id="' + uniqueId + '" ' + disabled + ' name="" value="1"> <label for="' + uniqueId + '">&nbsp;</label>';
-            html += '</div>';
-            html += '</div>';
+            html += '&lt;div class="checkbox ' + fontA + '">';
+            html += '&lt;input type="checkbox" class="' + fontA + '" id="' + uniqueId + '" ' + disabled + ' name="" value="1"> &lt;label for="' + uniqueId + '">&amp;nbsp;&lt;/label>';
+            html += '&lt;/div>';
+            html += '&lt;/div>';
 
             return html;
 
@@ -1808,7 +1835,7 @@ var gridform = gridform || {};
 
         //render the field content
         render : function (data, cellSelector, parent) {
-            var html = '<div class="headline">' + data.label + '</div>';
+            var html = '&lt;div class="headline">' + data.label + '&lt;/div>';
             return html;
         }
     });
@@ -1821,7 +1848,7 @@ var gridform = gridform || {};
 
 			//render the field content
 			render : function (data, cellSelector, parent) {
-				var html = '<div class="separator"></div>';
+				var html = '&lt;div class="separator">&lt;/div>';
 				return html;
 			}
 		});
@@ -1868,7 +1895,7 @@ var gridform = gridform || {};
 		if ($(this).length === 1)
 			obj.render(this);
 
-		//if no name is given, the object will not be available via direct access like "gridform.forms[<name>]"
+		//if no name is given, the object will not be available via direct access like "gridform.forms[&lt;name>]"
 		//but the object is returned here directly...
 		if (settings.name !== undefined) {
 			gridform.forms[settings.name] = obj;
@@ -1878,3 +1905,26 @@ var gridform = gridform || {};
 	};
 
 }(jQuery));
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="gridform.form.html">form</a></li><li><a href="mastertype.html">mastertype</a></li></ul><h3>Namespaces</h3><ul><li><a href="gridform.html">gridform</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a> on Thu Sep 04 2014 21:29:59 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
