@@ -339,6 +339,10 @@
                 //add the date-picker
                 var elem = $(cellSelector).find("input");
                 elem.Zebra_DatePicker();
+            },
+            // get data from the field
+            get : function (data, cellSelector) {
+                return $(cellSelector).find("input").val();
             }
         });
     

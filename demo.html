@@ -533,11 +533,11 @@ var elem = t15.getElement("string");
 // add a focus handler
 elem.on("focus", function () {
     // set a warning when accessing the field
-	t15.setWarning("string", "ups, custom focus handler");
+    t15.setWarning("string", "ups, custom focus handler");
 }).on("blur", function () {
     // add a blur handler: directly validate the field
-	console.log("This is a custom handler");
-	t15.validate("string");
+    console.log("This is a custom handler");
+    t15.validate("string");
 });
 </code></pre>
 
@@ -573,30 +573,33 @@ elem.on("focus", function () {
         
 <pre><code class="language-javascript">// Very simple custom date function
 gridform.addType("date", {
-	// a simple render function
-	render : function (data, cellSelector, parent) {
-		var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
-		return '&lt;input ' + disabled + ' type="text" class="form-control"&gt;&lt;/input&gt;';
-	},
-	//at least lock/unlock the field
-	enable : function (data, enable, cellSelector) {
+    // a simple render function
+    render : function (data, cellSelector, parent) {
+        var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
+        return '&lt;input ' + disabled + ' type="text" class="form-control"&gt;&lt;/input&gt;';
+    },
+    //at least lock/unlock the field
+    enable : function (data, enable, cellSelector) {
 
-		if (enable === true) {
-			$(cellSelector).find("input").removeAttr("disabled");
-		} else if (enable === false) {
-			$(cellSelector).find("input").attr("disabled", "disabled");
-		}
-		// set the locked status in the DatePicker
-		var elem = $(cellSelector).find("input");
-		elem.Zebra_DatePicker();
-
-	},
-	// after the element is in the DOM
-	afterDOMCreation : function (data, cellSelector, parent) {
-		//add the date-picker
-		var elem = $(cellSelector).find("input");
-		elem.Zebra_DatePicker();
-	}
+        if (enable === true) {
+            $(cellSelector).find("input").removeAttr("disabled");
+        } else if (enable === false) {
+            $(cellSelector).find("input").attr("disabled", "disabled");
+        }
+        // set the locked status in the DatePicker
+        var elem = $(cellSelector).find("input");
+        elem.Zebra_DatePicker();
+    },
+    // after the element is in the DOM
+    afterDOMCreation : function (data, cellSelector, parent) {
+        //add the date-picker
+        var elem = $(cellSelector).find("input");
+        elem.Zebra_DatePicker();
+    },
+    // get data from the field
+    get : function (data, cellSelector) {
+       return $(cellSelector).find("input").val();
+    }    
 });
 
 // define the grid
