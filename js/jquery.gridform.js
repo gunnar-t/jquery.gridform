@@ -821,7 +821,7 @@ var gridform = gridform || {};
 		 * If you define a validator function then a callback is needed to return the validator return value!
 		 *
 		 * @param id {String} Id of the field
-		 * @param callback {Function} Callback function (if the field validator is a function)
+		 * @param callback {Function} Callback function for the return of the validate option
 		 */
 		validate : function (id, callback) {
 
@@ -858,7 +858,7 @@ var gridform = gridform || {};
 
 					if (that.settings.debug)
 						console.log("Validated: " + that.validated + " / " + that.fieldCount + " => " + field.id);
-					//Hier bereits abbrechen
+					//Cancel here
 					if (onlyOne === true || that.fieldCount == that.validated) {
 						if (onlyOne === true) {
 							that.enable(true, id);
@@ -884,7 +884,7 @@ var gridform = gridform || {};
 					//set the field to waiting
 					that.setWaiting(field.id);
 					var value = that.getData(id);
-					//call the validate-function with "value" and then the callbback from the validating method
+					//call the validate-function with "value" and then the callback from the validating method
 					field.validate(value, function (valid) {
 
 						//if the field was set to waiting...then reset the status
@@ -911,16 +911,21 @@ var gridform = gridform || {};
 								that.enable(true, id);
 								if (that.settings.debug)
 									console.log("Validated field " + id + " to " + valid);
+                                //Trigger the event
+                                $(gridform.forms[that.settings.name]).trigger("validated", [{id : valid}]);                                        
 							} else {
 								that.enable(true);
 								if (that.settings.debug)
 									console.log("Validated form to " + that.valid);
+                                //Trigger the event
+                                $(gridform.forms[that.settings.name]).trigger("validated", [that.valid]);      
 							}
 							if (typeof callback === "function") {
 								if (that.settings.debug)
 									console.log("Validated: " + that.validated + " / " + that.fieldCount + " => " + field.id);
 								callback(that.valid);
 							}
+                            
 						}
 
 					});
@@ -949,10 +954,14 @@ var gridform = gridform || {};
 							that.enable(true, id);
 							if (that.settings.debug)
 								console.log("Validated field " + id + " to " + valid);
+                            //Trigger the event
+                            $(gridform.forms[that.settings.name]).trigger("validated", [{id : that.valid}]);   
 						} else {
 							that.enable(true);
 							if (that.settings.debug)
 								console.log("Validated form to " + that.valid);
+                            //Trigger the event
+                            $(gridform.forms[that.settings.name]).trigger("validated", [that.valid]);   
 						}
 
 						if (typeof callback === "function") {
@@ -1049,7 +1058,6 @@ var gridform = gridform || {};
 		 */
 		setLabel : function (data, cellSelectorLabel, parent) {
 
-			//var html = '<form class="form-inline" style="display:inline;text-align:right;">';
 			var html = '<div class="form-group" style="display:inline;">';
 			html += '   <label class="control-label">' + data.label;
 			//Mark mandatory fields with an asterisk
@@ -1058,7 +1066,6 @@ var gridform = gridform || {};
 			}
 			html += '</label>';
 			html += '</div>';
-			//html += '</form>';
 
 			return html;
 
@@ -1303,14 +1310,12 @@ var gridform = gridform || {};
             var placeholder = (data.placeholder !== undefined) ? data.placeholder : '';
             var maxLength = (data.maxLength !== undefined) ? 'maxlength="' + parseInt(data.maxLength, 10) + '"' : '';
 
-            //var html = '<form class="form-inline" role="form" style="">';
             var html = '<div class="form-group ' + hasFeedback + '" style="' + width + '">';
             html += '   <input type="' + type + '" ' + disabled + ' ' + maxLength + ' class="form-control" style="width:100%;" placeholder="' + placeholder + '"></input>';
             if (hasFeedback !== "") {
                 html += '   <span style="display:none;top:0;" class="' + parent.settings.icon_success + ' form-control-feedback"></span>';
             }
             html += '</div>';
-            //html += '</form>';
 
             return html;
 

@@ -85,7 +85,7 @@ $(document).ready(function(){
         });
         
         $(t).bind("validated",function(e, data){
-            console.log(data);
+            console.log("Return event: "+data);
         });
 
         
