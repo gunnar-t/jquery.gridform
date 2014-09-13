@@ -1,3 +1,6 @@
+Version 0.3.4 [09/13/2014]
+ - Added autocomplete field type (jquery-ui autocomplete)
+
 Version 0.3.3
  - Added docs (jsdoc) for the library
 

@@ -27,12 +27,10 @@ $(document).ready(function(){
                         //or with no error
                         callback(true);
                         t.setWarning("firstname","A littlebit short");
-                    }
-                    
+                    }                    
                 }},
                 
-                
-                
+
                 '5_2': {'id': 'description', 'label': 'Description', 'type': 'text', 'hasFeedback': true, 'width': '100%', 'colspan': 1, 'rowspan':3},
                 
                 '4_1': {'id': 'dsf', 'type': 'headline', 'label': 'Your profession', colspan:2},
@@ -44,7 +42,7 @@ $(document).ready(function(){
                         }else {
                             callback("The field is not set to 'Test'");
                         }
-                    },1000);
+                    },500);
                 }},
                 '6_1': {'id': 'desc', 'label': 'Area', 'type': 'select', 'width': '100%','hasFeedback': false, 'selection': [{'key':1,'value': 'Aerospace'},{'key':2,'value':'Food'},{'key':3,'value':'IT'},
                           {'key':4,'value':'Music business'}]},
@@ -54,10 +52,11 @@ $(document).ready(function(){
                         setDataCallback(data);
                     },2000);
                 }},
-                '8_1': {'id': 'sep1', 'type': 'separator', colspan:2},
-                '9_1': {'id': 'check', 'label': 'You want more ...', 'type': 'checkbox', 'width': '100%', 'mandatory': true, 'selection': [{'key':1,'value': 'money'},{'key':2,'value':'power'},{'key': 3, 'value': 'sparetime'}]},
-                '9_2': {'id': 'radio', 'label': 'You want less ...', 'type': 'radio', 'width': '100%', 'mandatory': true,  'inline': true, 'selection': [{'key':1,'value': 'work'},{'key':2,'value':'stupid questions'},{'key':5,'value': 'noobies'}]},
-                '10_1': {'id': 'readonly', 'label': 'Read-only', 'type': 'string', 'width': '150px;', 'readonly': true}
+                '8_1': {'id': 'typeahead', 'type': 'autocomplete', 'label': 'Autocomplete', 'url': 'autocomplete.php', 'hasFeedback': true},
+                '9_1': {'id': 'sep1', 'type': 'separator', colspan:2},
+                '10_1': {'id': 'check', 'label': 'You want more ...', 'type': 'checkbox', 'width': '100%', 'mandatory': true, 'selection': [{'key':1,'value': 'money'},{'key':2,'value':'power'},{'key': 3, 'value': 'sparetime'}]},
+                '10_2': {'id': 'radio', 'label': 'You want less ...', 'type': 'radio', 'width': '100%', 'mandatory': true,  'inline': true, 'selection': [{'key':1,'value': 'work'},{'key':2,'value':'stupid questions'},{'key':5,'value': 'noobies'}]},
+                '11_1': {'id': 'readonly', 'label': 'Read-only', 'type': 'string', 'width': '150px;', 'readonly': true}
             },
 
             'record': { 'lastname': '', 'readonly': 'AX-345/345'},
@@ -84,11 +83,7 @@ $(document).ready(function(){
             console.log("das Event 'render' meldet, dass ich zum "+ data.rendered + " mal gerendert wurde....");
         });
         
-        $(t).bind("validated",function(e, data){
-            console.log("Return event: "+data);
-        });
-
-        
+       
         /*
         t.setSuccess("firstname");
         t.setWarning("lastname","No name");
@@ -111,4 +106,33 @@ $(document).ready(function(){
 
 
 });
+
+
+function switchLabelStyle(obj){
+        
+        if(obj.settings.labelType === "over"){
+            obj.settings.labelType = "inline";
+            obj.settings.labelAlign = "right";
+        } else {
+            obj.settings.labelType = "over";
+            obj.settings.labelAlign = "left";
+        }
+        obj.render();
+    
+    }
+    
+    function registerHandler(obj){    
+    
+        //Change-Handler to "title"
+        $(obj.getElement("title")).on("change", function(){        
+            obj.validate("title");        
+        });
+        
+        //Blur-Handler to lastname
+        $(obj.getElement("lastname")).on("blur", function(){        
+            obj.validate("lastname");        
+        });
+        
+    };
+
 
