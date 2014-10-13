@@ -61,12 +61,12 @@ $(document).ready(function(){
 
             'record': { 'lastname': '', 'readonly': 'AX-345/345'},
             'mode': 'edit',
-            'dimensions': {'col_1':{'labelWidth': '120px','contentWidth': "200px"},
+            'dimensions': {'col_1':{'labelWidth': '150px','contentWidth': "200px"},
                            'col_2':{'labelWidth': '120px'},
                            'col_3': {'labelWidth': 0, 'contentWidth': '170px'}
                            },
             'useFontAwesome': true,
-            'icon_waiting': 'fa fa-spinner fa-spin',
+            //'icon_waiting': 'fa fa-spinner fa-spin',
             'showTooltipInstantly': false,
             'successIsGreen': true,
             'markMandatoryFields': true,

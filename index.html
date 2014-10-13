@@ -6,7 +6,7 @@
 
 <!-- Design stuff -->
 <link rel="stylesheet" type="text/css" href="css/reset.css"><!-- optional: for reseting browser defaults -->
-<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+
 
 <link rel="stylesheet" type="text/css" href="css/jquery.gridform.css">
 <link rel="stylesheet" type="text/css" href="css/font-awesome.css"><!-- optional: for nicer checboxes and stuff -->
@@ -14,33 +14,42 @@
 
 
 </head>
-<body style="padding:100px;">
+<body style="padding:100px;height:2000px;">
  
 <!-- Example 1 -->
 <div id="fullExample" style="border:0px solid gray;padding:5px;width:100%;min-width:800px;font-family:Helvetica,Arial,sans-serif;"></div>
 
 
 <div style="padding:4px;">
-    <button id="validate" class="btn btn-primary" style="margin:px;">Validate</button>
-    <button onClick="t.flush();" class="btn btn-primary" style="margin:px;">Flush</button>
-    <button onClick="t.resetFieldMarks();" class="btn btn-primary" style="margin:px;">Reset</button>
-    <button onClick="t.switchMode('view');" class="btn btn-primary" style="margin:px;">Render in View-Mode</button>
-    <button onClick="t.switchMode('edit');" class="btn btn-primary" style="margin:px;">Render in Edit-Mode</button>
-    <button onClick="t.enable(false);" class="btn btn-primary" style="margin:px;">Lock</button>
-    <button onClick="t.enable(true);" class="btn btn-primary" style="margin:px;">Unlock</button>
-    <button onClick="console.log(t.getData());" class="btn btn-primary" style="margin:0px;">Get data</button>
-    <button onClick="switchLabelStyle(t);" class="btn btn-primary" style="margin:0px;">Switch label style</button>
-    <button onClick="registerHandler(t);" class="btn btn-primary" style="margin:0px;">Register Handler</button>
-    
+    <button id="validate" class="btn btn-primary ui button mini" style="margin:px;">Validate</button>
+    <button onClick="t.flush();" class="btn btn-primary ui button mini" style="margin:px;">Flush</button>
+    <button onClick="t.resetFieldMarks();" class="btn btn-primary ui button mini" style="margin:px;">Reset</button>
+    <button onClick="t.switchMode('view');" class="btn btn-primary ui button mini" style="margin:px;">Render in View-Mode</button>
+    <button onClick="t.switchMode('edit');" class="btn btn-primary ui button mini" style="margin:px;">Render in Edit-Mode</button>
+    <button onClick="t.enable(false);" class="btn btn-primary ui button mini" style="margin:px;">Lock</button>
+    <button onClick="t.enable(true);" class="btn btn-primary ui button mini" style="margin:px;">Unlock</button>
+    <button onClick="console.log(t.getData());" class="btn btn-primary ui button mini" style="margin:0px;">Get data</button>
+    <button onClick="switchLabelStyle(t);" class="btn btn-primary ui button mini" style="margin:0px;">Switch label style</button>
+    <button onClick="registerHandler(t);" class="btn btn-primary ui button mini" style="margin:0px;">Register Handler</button>
 </div>
-
-
 
 <!-- JS-Libs (best to include at the END of your HTML file) !!-->
 <script src="js/jquery.min.js"></script>
 <script src="js/jquery-ui/jquery-ui.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
 <script src="js/jquery.gridform.js"></script>
+
+<!-- bootstrap -->
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<script src="js/bootstrap.min.js"></script>
+<script src="js/jquery.gridform.bootstrap.js"></script>
+
+
+<!-- Semantic ui
+<script src="js/semantic.min.js"></script>
+<script src="js/jquery.gridform.semantic.js"></script>
+<link rel="stylesheet" type="text/css" href="css/semantic.min.css">
+-->
+
 <script src="js/testGridform.js"></script>
 <!-- Plugin for autocomplete  -->
 <script src="js/autocomplete.plugin.js"></script>
