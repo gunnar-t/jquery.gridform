@@ -1,3 +1,6 @@
+Version 0.4 alpha [10/13/2014]
+- Added "Semantic UI" design version (you can choose to use bootstrap or semantic ui)
+
 Version 0.3.4 [09/13/2014]
  - Added autocomplete field type (jquery-ui autocomplete)
 
