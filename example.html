@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -5,72 +6,198 @@
 <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 
 <!-- Design stuff -->
-<link rel="stylesheet" type="text/css" href="css/reset.css"><!-- optional: for reseting browser defaults -->
-<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.gridform.css">
+<link rel="stylesheet" type="text/css" href="css/reset.css"><!-- optional: for reseting browser defaults -->
+<link rel="stylesheet" type="text/css" href="css/font-awesome.css"><!-- optional: for nicer checboxes and font-icons -->
+<link rel="stylesheet" type="text/css" href="js/jquery-ui/jquery-ui.css"><!-- optional: for select2 field type -->
+<link rel="stylesheet" type="text/css" href="css/icheck/skins/square/blue.css"><!-- optional: for even more nicer checkboxes -->
 
-<link rel="stylesheet" type="text/css" href="css/font-awesome.css"><!-- optional: for nicer checboxes and stuff -->
+<link rel="stylesheet" type="text/css" href="css/styles.css"><!-- optional: for even more nicer checkboxes -->
 
+
+</head>
+<body style="">
+ 
+<div class="nav-side-menu" style="position:absolute;top:0;left:0;bottom:0;box-shadow:0 0 5px gray;">
+        <div class="menu-list">
+  
+            <ul id="menu-content" class="menu-content collapse out">
+               
+                <li  data-toggle="collapse" data-target="#products" class="collapsed active">
+                  <a href="#"><i class="fa fa-cog fa-lg"></i> Form configuration <span class="arrow"></span></a>
+                </li>
+                <ul class="sub-menu" id="products">
+                    <li><input type="checkbox" id="useICheck" value="square-blue"></input> <label for="useICheck">Use iCheck</label> (Third Party Lib)</li>
+                    <li><input type="checkbox" id="useFontAwesome"></input> <label for="useFontAwesome">Use Font-Awesome</label> (Third Party Lib)</li>
+                    <li><input type="checkbox" id="successIsGreen"></input> <label for="successIsGreen">Success color: green</label></li>
+                    <li><input type="checkbox" id="markMandatoryFields"></input> <label for="markMandatoryFields">Mark mandatory fields</label></li>
+                    <li><input type="checkbox" id="showTooltipInstantly"></input> <label for="showTooltipInstantly">Show tooltip instantly (vs. on hover)</label></li>
+                    
+                    <li><input type="checkbox" id="debug"></input> <label for="debug">Debug mode</label></li>
+                    
+                    <li><input type="radio" name="version" id="bootstrap" checked></input> <label for="bootstrap">Bootstrap version</label></li>
+                    <li><input type="radio" name="version" id="semantic"></input> <label for="semantic">Semantic UI version</label></li>
+                    
+                    
+                    
+                    
+                </ul>
+
+                <li data-toggle="collapse" data-target="#service" class="collapsed">
+                  <a href="#"><i class="fa fa-bullhorn fa-lg"></i> Form actions <span class="arrow"></span></a>
+                </li>  
+                <ul class="sub-menu" id="service">
+                      <li onClick="document.getElementById('myIframe').contentWindow.t.validate();">Validate</li>
+                      <li onClick="document.getElementById('myIframe').contentWindow.t.flush();">Flush</li>
+                      <li onClick="document.getElementById('myIframe').contentWindow.t.resetFieldMarks();">Reset validation status</li>
+                      <li onClick="document.getElementById('myIframe').contentWindow.t.switchMode('view');">Render in View-Mode</li>
+                      <li onClick="document.getElementById('myIframe').contentWindow.t.switchMode('edit');">Render in Edit-Mode</li>
+                      <li onClick="document.getElementById('myIframe').contentWindow.t.render('#fullExample',{showCellNames:true});">Render in Wireframe-Mode</li>
+                    <li onClick="document.getElementById('myIframe').contentWindow.t.enable(false);">Lock</li>
+                    <li onClick="document.getElementById('myIframe').contentWindow.t.enable(true);">Unlock</li>
+                    <li onClick="loadExampleData()">Load example data</li>
+                    <li onClick="console.log(document.getElementById('myIframe').contentWindow.t.getData());">Get data</li>
+                    <li onClick="document.getElementById('myIframe').contentWindow.switchLabelStyle(document.getElementById('myIframe').contentWindow.t);">Switch label style</li>
+                    <li onClick="document.getElementById('myIframe').contentWindow.registerHandler(document.getElementById('myIframe').contentWindow.t);">Register Handler</li>
+                </ul>
+
+                
+            </ul>
+     </div>
+          
+     
+      
+</div>
+
+
+
+<div style="position:absolute;top:0;right:0;bottom:0px;left:310px;border:0px solid red;overflow:hidden;">
+    <iframe id="myIframe" src="" style="width:100%;height:100%;"></iframe>
+</div>
+
+<!-- JS-Libs (best to include at the END of your HTML file) !!-->
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery-ui/jquery-ui.min.js"></script>
+<!-- bootstrap -->
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<script src="js/bootstrap.min.js"></script>
+<!-- Optional iCheck for cooler checkboxes and radio buttons -->
+<script src="js/iCheck.min.js"></script>
 
 <script>
 
-    function switchLabelStyle(obj){
+var firstLoad = true;
+
+/**
+* This gets called by the iframe rendered form
+* and sets the settings in the menu config area
+*/
+$(document).ready(function(){
+
+    $('#myIframe').attr("src","bootstrapFrame.html");
+    
+    getConfiguredSettings = function(){
+
+        var values = [];       
+        $.each($('div.menu-list input[type="checkbox"]'), function(index, obj){ 
+
+            var checked = $(obj).is(":checked");
         
-        console.log(obj);
-        if(obj.settings.labelType === "over"){
-            obj.settings.labelType = "inline";
-            obj.settings.labelAlign = "right";
-        } else {
-            obj.settings.labelType = "over";
-            obj.settings.labelAlign = "left";
+            //If value other than "on";
+            var value = $(obj).val();
+            if(checked == true && value !== "on"){
+                checked = value;
+            }
+        
+            values[$(obj).attr("id")] = checked;
+        });
+        
+        //Not the first load...return the settings...
+        if(firstLoad !== true)return values;
+        firstLoad = false;
+        return [];
+    
+    };    
+    
+    
+    loadExampleData = function(){
+    
+        var data = {
+            title: 2,
+            title2: true,
+            lastname: 'Doe',
+            firstname: 'John',
+            company: 'Test',
+            description: 'This is a longer description for test purposes ...',
+            desc: 3,
+            desc2: 1,
+            typeahead: 'auto',
+            check: ['money_1','sparetime_3'],
+            radio: 5,
+            readonly: 'this is readonly'
+            
+            
+        };
+    
+    
+        document.getElementById('myIframe').contentWindow.t.setData(data);
+    
+    };
+        
+    
+    formRendered = function(object){
+        
+        
+        for(var x in object.settings){            
+            if($('#'+x).length == 1){
+                (object.settings[x] !== false)? $('#'+x).iCheck('check'): $('#'+x).iCheck('uncheck');
+            }  
         }
-        obj.render();
-    
-    }
-    
-    function registerHandler(obj){    
-    
-        //Change-Handler to "title"
-        $(obj.getElement("title")).on("change", function(){        
-            obj.validate("title");        
-        });
-        
-        //Blur-Handler to lastname
-        $(obj.getElement("lastname")).on("blur", function(){        
-            obj.validate("lastname");        
-        });
         
     };
 
+   
+    $('div.menu-list input').iCheck({
+        radioClass: 'iradio_square-blue',
+        checkboxClass: 'icheckbox_square-blue',
+    });
+    
+    $('div.menu-list input[type=checkbox]').on('ifChanged', function(event){
+        
+        var setting = event.currentTarget.id;
+        var checked = (event.currentTarget.checked == true)? true: false;
+        
+        //If value other than "on";
+        var value = $(event.currentTarget).val();
+        if(checked == true && value !== "on"){
+            checked = value;
+        }
+        
+        var settings = document.getElementById('myIframe').contentWindow.t.settings;
+        settings[setting] = checked;
+                
+        document.getElementById('myIframe').contentWindow.t.init(settings);
+        document.getElementById('myIframe').contentWindow.t.render();
+        
+        
+    });
+    
+    $('div.menu-list input[type=radio]').on('ifChanged', function(event){
+    
+        if($(event.currentTarget).is(":checked") === true){
+           if(event.currentTarget.id == "bootstrap"){
+               $('#myIframe').attr("src","bootstrapFrame.html"); 
+           } else if(event.currentTarget.id == "semantic"){
+                $('#myIframe').attr("src","semanticuiFrame.html");
+           }
+        }               
+    
+    });
+    
+    
+
+                  
+});
 </script>
-</head>
-<body style="padding:100px;">
-
-
-
-<!-- Example 1 -->
-<div id="fullExample" style="border:0px solid gray;padding:5px;width:100%;min-width:800px;font-family:Helvetica,Arial,sans-serif;">
-    
-
-</div>
-<div style="padding:4px;">
-    <button id="validate" class="btn btn-primary" style="margin:px;">Validate</button>
-    <button onClick="t.flush();" class="btn btn-primary" style="margin:px;">Flush</button>
-    <button onClick="t.resetFieldMarks();" class="btn btn-primary" style="margin:px;">Reset</button>
-    <button onClick="t.switchMode('view');" class="btn btn-primary" style="margin:px;">Render in View-Mode</button>
-    <button onClick="t.switchMode('edit');" class="btn btn-primary" style="margin:px;">Render in Edit-Mode</button>
-    <button onClick="t.enable(false);" class="btn btn-primary" style="margin:px;">Lock</button>
-    <button onClick="t.enable(true);" class="btn btn-primary" style="margin:px;">Unlock</button>
-    <button onClick="console.log(t.getData());" class="btn btn-primary" style="margin:0px;">Get data</button>
-    <button onClick="switchLabelStyle(t);" class="btn btn-primary" style="margin:0px;">Switch label style</button>
-    <button onClick="registerHandler(t);" class="btn btn-primary" style="margin:0px;">Register Handler</button>
-    
-</div>
-
-<!-- JS-Libs (best to include at the END ofr your HTML file !!-->
-<script src="js/jquery.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/jquery.gridform.js"></script>
-<script src="js/testGridform.js"></script>
 
 </body>

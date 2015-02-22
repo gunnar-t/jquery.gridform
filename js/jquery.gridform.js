@@ -1,7 +1,7 @@
 /** @namespace */
 var gridform = gridform || {};
 /**
- * jquery.gridform v0.3.3
+ * jquery.gridform v0.4 alpha
  *
  * Built as jQuery PlugIn for usage with bootstrap 3.x
  * can be overwritten for usage with other libs
@@ -15,6 +15,23 @@ var gridform = gridform || {};
 
 	gridform.forms = {};
 	gridform.types = {};
+    
+    //Extend jquery with an "all" method for promises
+    //Thanks to when.js (https://github.com/cujojs/when)
+    if ($.when.all===undefined) {
+        $.when.all = function(deferreds) {
+            var deferred = new $.Deferred();
+            $.when.apply($, deferreds).then(
+                function() {
+                    deferred.resolve(Array.prototype.slice.call(arguments));
+                },
+                function() {
+                    deferred.fail(Array.prototype.slice.call(arguments));
+                });
+
+            return deferred;
+        }
+    }
 
 	/**
 	 * Gridform base object
@@ -38,6 +55,7 @@ var gridform = gridform || {};
 		renderedAtTarget : null,
 		rendered : null,
 		fieldCount : null,
+        hiddenFields: null,
 		//default settings that can be overwritten on prototype level :)
 		defaultSettings : {
 			// These are the defaults.
@@ -57,6 +75,8 @@ var gridform = gridform || {};
 			successIsGreen : false,
 			//use font-awesome for checkboxes and radio-buttons
 			useFontAwesome : false,
+            //use iCheck for nicer checkboxes (if so, font-awesome is ignored for checkboxes and radio buttons)
+            useICheck: false,
 			//mark mandatory fields by an asterisk
 			markMandatoryFields : true,
 			//Icons for the status
@@ -87,6 +107,27 @@ var gridform = gridform || {};
 
 			//Settings
 			this.settings = $.extend({}, this.defaultSettings, userSettings);
+                    
+            //If iCheck should be used..the types "radio" and "checkbox", "boolean" are overwritten to
+            //"iradio", "icheckbox", "iboolean"
+            if(this.settings.useICheck !== false){
+                for(var x in this.settings.fields){
+                    var type = this.settings.fields[x]['type'];
+                    if(type == "checkbox" || type == "boolean" || type == "radio"){
+                        this.settings.fields[x]['type'] = "i"+type;
+                    }
+                }
+            } else {
+            
+                //Maybe some types of iradio, icheck or iboolean needs to be corrected to the basic types
+                for(var x in this.settings.fields){
+                    var type = this.settings.fields[x]['type'];
+                    if(type == "icheckbox" || type == "iboolean" || type == "iradio"){
+                        this.settings.fields[x]['type'] = type.substr(1);
+                    }
+                }
+            
+            }
 
 			return this;
 
@@ -104,7 +145,8 @@ var gridform = gridform || {};
 			this.fieldCount = 0;
 			this.rendered = 0;
 			this.fieldsById = {};
-
+            this.hiddenFields = {};
+            
 			//If target is an object, it needs the selector property
 			if (typeof target === "object") {
 				if (target.selector === undefined)
@@ -137,10 +179,7 @@ var gridform = gridform || {};
 			this.setData(this.settings.record);
 
 			//Fire event after finalizing the render method
-			$(gridform.forms[this.settings.name]).trigger("rendered", [{
-						'rendered' : this.rendered
-					}
-				]);
+			$(gridform.forms[this.settings.name]).trigger("rendered", [{'rendered' : this.rendered}]);
 
 			return this;
 		},
@@ -219,12 +258,13 @@ var gridform = gridform || {};
 			}
 
 			//Build the table
-			var html = '<table class="gridform" border=0 ><tbody>';
+            var debugClass = (showCellNames)? 'gridformDebug': '';
+			var html = '<table class="gridform '+debugClass+'" border=0><tbody>';
 
 			if (this.settings.labelType === "inline") {
 
 				//Build an empty row to set the column widths as set by the settings
-				html += '<tr>';
+				html += '<tr class="'+debugClass+'">';
 				for (var c = 1; c <= this.cols; c++) {
 					var labelWidth = '';
 					var contentWidth = '';
@@ -232,8 +272,8 @@ var gridform = gridform || {};
 						labelWidth = (this.settings.dimensions['col_' + c].labelWidth !== undefined) ? 'width:' + this.settings.dimensions['col_' + c].labelWidth : '';
 						contentWidth = (this.settings.dimensions['col_' + c].contentWidth !== undefined) ? 'width:' + this.settings.dimensions['col_' + c].contentWidth : '';
 					}
-					html += '<td style="' + labelWidth + '"></td>';
-					html += '<td style="' + contentWidth + '"></td>';
+					html += '<td class="'+debugClass+'" style="' + labelWidth + '"></td>';
+					html += '<td class="'+debugClass+'" style="' + contentWidth + '"></td>';
 				}
 				html += '</tr>';
 
@@ -253,9 +293,8 @@ var gridform = gridform || {};
 							}
 
 							//No field configured ... empty cells
-							html += '<td data-id="' + rc + '" class="gridform_content" colspan="2">';
-							if (showCellNames)
-								html += rc;
+							html += '<td data-id="' + rc + '" class="gridform_content '+debugClass+'" colspan="2">';
+							if (showCellNames)html += rc;
 							html += '</td>';
 						} else {
 
@@ -280,8 +319,7 @@ var gridform = gridform || {};
 							for (var x = r; x < (r + rowspan); x++) {
 								//If there is some colspan, then the next cells (that are "spanned") needs to be ignored
 								for (var y = c; y < c + colspan; y++) {
-									if (this.settings.debug)
-										console.log("The cell " + x + '_' + y + " is filled by field '" + this.settings.fields[rc].id + "'");
+									if (this.settings.debug)console.log("The cell " + x + '_' + y + " is filled by field '" + this.settings.fields[rc].id + "'");
 									spannedCells[x + '_' + y] = this.settings.fields[rc].id;
 								}
 
@@ -297,19 +335,18 @@ var gridform = gridform || {};
 							if (this.settings.fields[rc].label === undefined || labelAllowed === false) {
 								//colspan plus one (there is no label!)
 								colspan++;
-								html += '<td data-id="' + rc + '" class="gridform_content" colspan="' + colspan + '" rowspan="' + rowspan + '">';
-								if (showCellNames)
-									html += rc;
+								html += '<td data-id="' + rc + '" class="gridform_content '+debugClass+'" colspan="' + colspan + '" rowspan="' + rowspan + '">';
+								if (showCellNames)html += rc + ' ' + this.settings.fields[rc].label;
 								html += '</td>';
 							} else {
 								//Label and ... field
 
-								html += '<td data-id="' + rc + '" class="gridform_label" style="text-align:' + labelAlign + ';" rowspan="' + rowspan + '">';
+								html += '<td data-id="' + rc + '" class="gridform_label '+debugClass+'" style="text-align:' + labelAlign + ';" rowspan="' + rowspan + '">';
 								if (showCellNames)
 									html += '<small>' + rc + ': ' + this.settings.fields[rc].label + '</small>';
 								html += '</td>';
 								//Field
-								html += '<td data-id="' + rc + '" class="gridform_content" style="height:100%;vertical-align:top;" colspan="' + colspan + '" rowspan="' + rowspan + '">';
+								html += '<td data-id="' + rc + '" class="gridform_content '+debugClass+'" style="height:100%;vertical-align:top;" colspan="' + colspan + '" rowspan="' + rowspan + '">';
 								if (showCellNames)
 									html += '<small>' + rc + ': field ' + this.settings.fields[rc].id + '</small>';
 								html += '</td>';
@@ -324,13 +361,13 @@ var gridform = gridform || {};
 			} else if (this.settings.labelType === "over") {
 
 				//Build an empty row to set the column widths as set by the settings (just take a look at the contentWidths)
-				html += '<tr>';
+				html += '<tr class="'+debugClass+'">';
 				for (var c = 1; c <= this.cols; c++) {
 					var contentWidth = '';
 					if (this.settings.dimensions['col_' + c] !== undefined) {
 						contentWidth = (this.settings.dimensions['col_' + c].contentWidth !== undefined) ? 'width:' + this.settings.dimensions['col_' + c].contentWidth : '';
 					}
-					html += '<td style="' + contentWidth + '"></td>';
+					html += '<td class="'+debugClass+'" style="' + contentWidth + '"></td>';
 				}
 				html += '</tr>';
 
@@ -339,7 +376,7 @@ var gridform = gridform || {};
 					//Build all cells in that row
 					//This is always two <tr> per logical ROW
 
-					html += '<tr>';
+					html += '<tr class="'+debugClass+'">';
 					for (var c = 1; c <= this.cols; c++) {
 						//Row and col identifier
 						var rc = r + '_' + c;
@@ -352,7 +389,7 @@ var gridform = gridform || {};
 								continue;
 							}
 							//No field configured ... empty cells (label and content-area therefore rowspan:2)
-							html += '<td data-id="' + rc + '" class="gridform_content" rowspan="2">';
+							html += '<td data-id="' + rc + '" class="gridform_content '+debugClass+'" rowspan="2">';
 							if (showCellNames)
 								html += rc;
 							html += '</td>';
@@ -380,8 +417,7 @@ var gridform = gridform || {};
 							for (var x = r; x < (r + rowspan); x++) {
 								//If there is some colspan, then the next cells (that are "spanned") needs to be ignored
 								for (var y = c; y < c + colspan; y++) {
-									if (this.settings.debug)
-										console.log("The cell " + x + '_' + y + " is filled by field content '" + this.settings.fields[rc].id + "'");
+									if (this.settings.debug)console.log("The cell " + x + '_' + y + " is filled by field content '" + this.settings.fields[rc].id + "'");
 									spannedCells[x + '_' + y] = this.settings.fields[rc];
 								}
 							}
@@ -393,14 +429,14 @@ var gridform = gridform || {};
 							if (this.settings.fields[rc].label === undefined || labelAllowed === false) {
 
 								//Rowspan is here now the configured rowspan * 2 (there is no label)
-								html += '<td data-id="' + rc + '" class="gridform_content" colspan="' + colspan + '" rowspan="' + (rowspan * 2) + '">';
+								html += '<td data-id="' + rc + '" class="gridform_content '+debugClass+'" colspan="' + colspan + '" rowspan="' + (rowspan * 2) + '">';
 								if (showCellNames)
 									html += rc;
 								html += '</td>';
 
 							} else {
 								//Label
-								html += '<td data-id="' + rc + '" class="gridform_label" style="text-align:' + labelAlign + ';" colspan="' + colspan + '">';
+								html += '<td data-id="' + rc + '" class="gridform_label '+debugClass+'" style="text-align:' + labelAlign + ';" colspan="' + colspan + '">';
 								if (showCellNames)
 									html += '<small>' + rc + ': ' + this.settings.fields[rc].label + '</small>';
 								html += '</td>';
@@ -413,7 +449,7 @@ var gridform = gridform || {};
 					html += '</tr>';
 
 					//Build all cells in that row with field content
-					html += '<tr>';
+					html += '<tr class="'+debugClass+'">';
 					for (var c = 1; c <= this.cols; c++) {
 						//Row and col identifier
 						var rc = r + '_' + c;
@@ -446,19 +482,15 @@ var gridform = gridform || {};
 								}
 
 								//Field
-								html += '<td data-id="' + rc + '" class="gridform_content" style="height:100%;vertical-align:top;" colspan="' + colspan + '" rowspan="' + ((rowspan * 2) - 1) + '">';
+								html += '<td data-id="' + rc + '" class="gridform_content '+debugClass+'" style="height:100%;vertical-align:top;" colspan="' + colspan + '" rowspan="' + ((rowspan * 2) - 1) + '">';
 								if (showCellNames)
 									html += '<small>' + rc + ': field ' + this.settings.fields[rc].id + '</small>';
 								html += '</td>';
 							}
-
 						}
-
 					}
 					html += '</tr>';
-
 				}
-
 			}
 
 			html += '</tbody></table>';
@@ -483,10 +515,15 @@ var gridform = gridform || {};
 			for (var x in this.settings.fields) {
 				var type = this.settings.fields[x].type;
 				var field = this.settings.fields[x];
-
+                
 				//Cell-selector
 				var cellSelectorLabel = this.settings.target + ' td[data-id=' + x + '].gridform_label';
 				var cellSelectorContent = this.settings.target + ' td[data-id=' + x + '].gridform_content';
+
+				//Is there a type like this
+				if (gridform.types[type] == undefined) {
+					console.error("No type " + type + " is known?!");
+				}
 
 				//Is there is an internal function for that type
 				if (gridform.types[type] !== undefined && typeof gridform.types[type]['setLabel'] === "function") {
@@ -534,6 +571,30 @@ var gridform = gridform || {};
 					})(field.id);
 				}
 			}
+            
+            //Register the hidden fields
+            for (var x in this.settings.hiddenFields) {
+                
+                //Is the field id free or already taken (by a none hidden field?!
+				if (this.fieldsById[this.settings.hiddenFields[x].id] !== undefined) {
+					console.error("The id '" + this.settings.hiddenFields[x].id + "' is already taken, the hidden field is deleted from the grid!");
+					delete this.settings.hiddenFields[x];
+                    continue;
+				}
+                
+                var id = this.settings.hiddenFields[x].id;
+                
+                //Register the hidden field
+                //if there is a value given in the settings?
+                if(this.settings.hiddenFields[x].value !== undefined){
+                    this.hiddenFields[id] = this.settings.hiddenFields[x].value;
+                } else {
+                    this.hiddenFields[id] = null;
+                }
+                
+                
+            }
+            
 
 		},
 
@@ -547,10 +608,8 @@ var gridform = gridform || {};
 			//Set the data in the grid
 			for (var x in record) {
 				//Is there an field with the given id
-				if (this.fieldsById[x] === undefined) {
-					//Error
-					console.error("No field with id " + x + ", so I can set the data!");
-				} else {
+				if (this.fieldsById[x] !== undefined) {
+					
 					//Search for the set-method of the correct type
 					var type = this.fieldsById[x].type;
 					var field = this.fieldsById[x];
@@ -564,6 +623,12 @@ var gridform = gridform || {};
 						console.error("No set function for type " + type);
 					}
 
+				} else if(this.hiddenFields[x] !== undefined){
+                    //set the value for the hidden field
+                    this.hiddenFields[x] = record[x];                
+                } else {
+                    //Error
+					console.error("No field with id " + x + ", so I can set the data!");
 				}
 			}
 		},
@@ -604,8 +669,7 @@ var gridform = gridform || {};
 				//Call that function
 				return gridform.types[field.type]['getFieldNode'](field, cellSelectorContent, this);
 			} else {
-				if (this.settings.debug)
-					console.log("getElement: No getFieldNode-Method for field type " + field.type);
+				if (this.settings.debug)console.log("getElement: No getFieldNode-Method for field type " + field.type);
 				return false;
 			}
 
@@ -634,8 +698,7 @@ var gridform = gridform || {};
 				//Call that function
 				gridform.types[field.type]['set' + type](field, message, cellSelectorLabel, cellSelectorContent, this);
 			} else {
-				if (this.settings.debug)
-					console.log("No set" + type + "-Method for field type " + field.type);
+				if (this.settings.debug)console.log("No set" + type + "-Method for field type " + field.type);
 			}
 
 		},
@@ -702,8 +765,7 @@ var gridform = gridform || {};
 					//Call that function
 					gridform.types[field.type]['resetFieldMark'](field, cellSelectorLabel, cellSelectorContent, that);
 				} else {
-					if (this.settings.debug)
-						console.log("No resetFieldMark-Method for field type " + field.type);
+					if (this.settings.debug)console.log("No resetFieldMark-Method for field type " + field.type);
 				}
 
 			};
@@ -807,10 +869,21 @@ var gridform = gridform || {};
 						data[this.fieldsById[x].id] = d;
 					}
 				}
+                //Get all hidden fields 
+                for(var x in this.hiddenFields){
+                    data[x] = this.hiddenFields[x];
+                }
 				return data;
 
 			} else {
-				return get(id);
+                //is it a hidden field
+                if(this.fieldsById[id] !== undefined){
+                    return get(id);
+                } else if(this.hiddenFields[id] !== undefined){
+                    return this.hiddenFields[id];
+                } else {
+                    console.error("No such field " + id);
+                }
 			}
 
 		},
@@ -821,26 +894,30 @@ var gridform = gridform || {};
 		 * If you define a validator function then a callback is needed to return the validator return value!
 		 *
 		 * @param id {String} Id of the field
-		 * @param callback {Function} Callback function (if the field validator is a function)
+		 * @param callback {Function} Callback function for the return of the validate option
 		 */
-		validate : function (id, callback) {
+		validate: function (id, callback) {
 
 			var that = this;
 
 			//Internal function
-			function validate(id, callback, onlyOne) {
-
+			function validate(id, deferred) {
+                             
 				//Reset the field
 				that.resetFieldMarks(id);
 
 				var field = that.fieldsById[id];
-				if (field === undefined)
-					return false;
+				if (field === undefined){
+                    deferred.resolve('No field with this id');
+                    return false;
+                }
 				var type = field.type;
 
 				//Is this a field with data
-				if (gridform.types[type].containsData !== true)
-					return false;
+				if (gridform.types[type].containsData !== true){
+                    deferred.resolve(true);
+                    return false;
+                }
 
 				//get the cell where this field is
 				var cellSelector = that.settings.target + ' td[data-id=' + field.row + '_' + field.col + '].gridform_content';
@@ -852,30 +929,9 @@ var gridform = gridform || {};
 					(value === "" || value === null || value === undefined ||
 						(typeof value === "object" && value.length === 0))) {
 					that.setError(id, that.settings.language.mandatoryField);
-					that.valid = false;
-					valid = false;
-					that.validated++;
-
-					if (that.settings.debug)
-						console.log("Validated: " + that.validated + " / " + that.fieldCount + " => " + field.id);
-					//Hier bereits abbrechen
-					if (onlyOne === true || that.fieldCount == that.validated) {
-						if (onlyOne === true) {
-							that.enable(true, id);
-							if (that.settings.debug)
-								console.log("Validated field " + id + " to " + valid);
-						} else {
-							that.enable(true);
-							if (that.settings.debug)
-								console.log("Validated form to " + that.valid);
-						}
-						if (typeof callback === "function") {
-							if (that.settings.debug)
-								console.log("ready with validating");
-							callback(valid);
-						}
-					}
-
+						
+					if (that.settings.debug)console.log("Validated: " + field.id + " " + false);
+                    deferred.resolve(false);                    
 					return;
 				}
 
@@ -884,7 +940,7 @@ var gridform = gridform || {};
 					//set the field to waiting
 					that.setWaiting(field.id);
 					var value = that.getData(id);
-					//call the validate-function with "value" and then the callbback from the validating method
+					//call the validate-function with "value" and then the callback from the validating method
 					field.validate(value, function (valid) {
 
 						//if the field was set to waiting...then reset the status
@@ -899,87 +955,75 @@ var gridform = gridform || {};
 							that.setSuccess(id);
 						} else {
 							that.setError(id, valid);
-							that.valid = false;
 						}
 
-						that.validated++;
-						if (that.settings.debug)
-							console.log("Validated: " + that.validated + " / " + that.fieldCount + " => " + field.id);
-						//Are all fields checked?!
-						if (onlyOne === true || that.fieldCount == that.validated) {
-							if (onlyOne === true) {
-								that.enable(true, id);
-								if (that.settings.debug)
-									console.log("Validated field " + id + " to " + valid);
-							} else {
-								that.enable(true);
-								if (that.settings.debug)
-									console.log("Validated form to " + that.valid);
-							}
-							if (typeof callback === "function") {
-								if (that.settings.debug)
-									console.log("Validated: " + that.validated + " / " + that.fieldCount + " => " + field.id);
-								callback(that.valid);
-							}
-						}
-
+						if (that.settings.debug)console.log("Validated: " + field.id + " " + valid);
+                        deferred.resolve(valid);                     
+				
 					});
 
 				} else {
 
+                    var valid = true;
 					//Is there an internal function for that type
 					if (gridform.types[type] !== undefined && typeof gridform.types[type]['validate'] === "function") {
 						//Call that function
 						var valid = gridform.types[type]['validate'](field, cellSelector);
-						if (valid !== true) {
-							if (that.settings.debug)
-								console.log(valid);
-							that.setError(id, valid);
-							that.valid = false;
-						}
-					}
-					that.setSuccess(id);
-
-					that.validated++;
-					if (that.settings.debug)
-						console.log("Validated: " + that.validated + " / " + that.fieldCount + " => " + field.id);
-					//Are all fields checked?!
-					if (onlyOne === true || that.fieldCount == that.validated) {
-						if (onlyOne === true) {
-							that.enable(true, id);
-							if (that.settings.debug)
-								console.log("Validated field " + id + " to " + valid);
-						} else {
-							that.enable(true);
-							if (that.settings.debug)
-								console.log("Validated form to " + that.valid);
-						}
-
-						if (typeof callback === "function") {
-							if (that.settings.debug)
-								console.log("ready with validating");
-							callback(that.valid);
-						}
-					}
+                    }
+                    
+                    if (valid !== true) {
+						that.setError(id, valid);
+					} else {                        
+                        that.setSuccess(id);
+                    }
+                    if (that.settings.debug)console.log("Validated: " + field.id + "  " + valid);
+                    
+					deferred.resolve(valid);
+					
 				}
 
 			};
 
-			this.valid = true;
-			this.validated = 0;
-
+            
+            var deferreds = [];           
+            
 			if (id === undefined) {
+                //Lock all fields while validating
 				this.enable(false);
 				//validate all fields
 				for (var x in this.fieldsById) {
-					validate(this.fieldsById[x].id, callback);
+                    var deferred = $.Deferred();
+                    deferreds.push(deferred);
+					validate(this.fieldsById[x].id, deferred);
 				}
-
+   
 			} else {
 				//just one field
-				this.enable(false, id);
-				validate(id, callback, true);
-			}
+                //lock the field
+				this.enable(false, id);                
+                var deferred = $.Deferred();
+                deferreds.push(deferred);
+				validate(id, deferred);
+			}         
+                        
+            //When all deferreds are done, trigger the event and return the 
+            //validation result (if any callback was given)
+            $.when.all(deferreds).then(function(objects) {
+            
+                var valid = true;
+                //Check all objects for a "true"
+                for(var x in objects){
+                    if(objects[x] !== true)valid = false;
+                }
+                that.enable(true);                
+                //Trigger the event
+				$(gridform.forms[that.settings.name]).trigger("validated",false);
+                
+                if(typeof callback == "function"){
+                    callback(valid);
+                }
+            }); 
+            
 		},
 
 		/**
@@ -1021,18 +1065,23 @@ var gridform = gridform || {};
 				enableField(enable, id);
 			}
 
-		}
+		},
+        
+              
+        
 
 	};
-
-	/**
+    
+    
+    
+    /**
 	 * Abstract field type
 	 *
 	 * All fields extend this type and overwrite some of the methods.
 	 *
 	 * @class mastertype
 	 */
-	var mastertype = {
+	gridform.types.__mastertype = {
 
 		/** @property {boolean} is a label allowed (e.g. the headline or separator has no label, just a field content) */
 		labelAllowed : true,
@@ -1049,7 +1098,6 @@ var gridform = gridform || {};
 		 */
 		setLabel : function (data, cellSelectorLabel, parent) {
 
-			//var html = '<form class="form-inline" style="display:inline;text-align:right;">';
 			var html = '<div class="form-group" style="display:inline;">';
 			html += '   <label class="control-label">' + data.label;
 			//Mark mandatory fields with an asterisk
@@ -1058,7 +1106,6 @@ var gridform = gridform || {};
 			}
 			html += '</label>';
 			html += '</div>';
-			//html += '</form>';
 
 			return html;
 
@@ -1288,533 +1335,784 @@ var gridform = gridform || {};
 		}
 	};
 
+       
 
-    //String field type
-	gridform.types.string = $.extend({}, mastertype, {
+	//String field type
+	gridform.types.string = $.extend({}, gridform.types.__mastertype, {
 
-        //render the field content
-        render : function (data, cellSelector, parent) {
+			//render the field content
+			render : function (data, cellSelector, parent) {
 
-            //Simple input text
-            var disabled = (parent.settings.mode === "edit" && data.readonly !== true) ? '' : 'disabled';
-            var hasFeedback = (data.hasFeedback === true) ? 'has-feedback' : '';
-            var width = (data.width !== undefined) ? 'width:' + data.width : '';
-            var type = (data.pwd === true) ? 'password' : 'text';
-            var placeholder = (data.placeholder !== undefined) ? data.placeholder : '';
-            var maxLength = (data.maxLength !== undefined) ? 'maxlength="' + parseInt(data.maxLength, 10) + '"' : '';
+				//Simple input text
+				var disabled = (parent.settings.mode === "edit" && data.readonly !== true) ? '' : 'disabled';
+				var hasFeedback = (data.hasFeedback === true) ? 'has-feedback' : '';
+				var width = (data.width !== undefined) ? 'width:' + data.width : '';
+				var type = (data.pwd === true) ? 'password' : 'text';
+				var placeholder = (data.placeholder !== undefined) ? data.placeholder : '';
+				var maxLength = (data.maxLength !== undefined) ? 'maxlength="' + parseInt(data.maxLength, 10) + '"' : '';
 
-            //var html = '<form class="form-inline" role="form" style="">';
-            var html = '<div class="form-group ' + hasFeedback + '" style="' + width + '">';
-            html += '   <input type="' + type + '" ' + disabled + ' ' + maxLength + ' class="form-control" style="width:100%;" placeholder="' + placeholder + '"></input>';
-            if (hasFeedback !== "") {
-                html += '   <span style="display:none;top:0;" class="' + parent.settings.icon_success + ' form-control-feedback"></span>';
-            }
-            html += '</div>';
-            //html += '</form>';
+				var html = '<div class="form-group ' + hasFeedback + '" style="' + width + '">';
+				html += '   <input type="' + type + '" ' + disabled + ' ' + maxLength + ' class="form-control" style="width:100%;" placeholder="' + placeholder + '"></input>';
+				if (hasFeedback !== "") {
+					html += '   <span style="display:none;top:0;" class="' + parent.settings.icon_success + ' form-control-feedback"></span>';
+				}
+				html += '</div>';
 
-            return html;
+				return html;
 
-        },
-        //set the field content
-        set : function (data, value, cellSelector, parent) {
+			},
+			//set the field content
+			set : function (data, value, cellSelector, parent) {
 
-            //Set the data in the input field
-            if (parent.settings.mode === "edit") {
-                $(cellSelector).find("input").val(value);
-            } else {
-                $(cellSelector).find("input").val(value);
-            }
+				//Set the data in the input field
+				if (parent.settings.mode === "edit") {
+					$(cellSelector).find("input").val(value);
+				} else {
+					$(cellSelector).find("input").val(value);
+				}
 
-        },
+			},
 
-        setPlaceholder : function (data, value, cellSelector, parent) {
-            $(cellSelector).find("input").attr("placeholder", value);
-        },
-        //get the field content
-        get : function (data, cellSelector) {
+			setPlaceholder : function (data, value, cellSelector, parent) {
+				$(cellSelector).find("input").attr("placeholder", value);
+			},
+			//get the field content
+			get : function (data, cellSelector) {
 
-            return $(cellSelector).find("input").val();
+				return $(cellSelector).find("input").val();
 
-        },
+			},
 
-        //get the field, input, select, etc.
-        getFieldNode : function (field, cellSelector) {
-            return $(cellSelector).find("input");
-        },
-        //flush the field
-        flush : function (cellSelector, parent) {
+			//get the field, input, select, etc.
+			getFieldNode : function (field, cellSelector) {
+				return $(cellSelector).find("input");
+			},
+			//flush the field
+			flush : function (cellSelector, parent) {
 
-            $(cellSelector).find("input").val("");
+				$(cellSelector).find("input").val("");
 
-        },
+			},
 
-        enable : function (data, enable, cellSelector) {
+			enable : function (data, enable, cellSelector) {
 
-            //If readonly this is always disabled....
-            if (data.readonly === true)
-                return false;
+				//If readonly this is always disabled....
+				if (data.readonly === true)
+					return false;
 
-            if (enable === true) {
-                $(cellSelector).find("input").removeAttr("disabled");
-            } else if (enable === false) {
-                $(cellSelector).find("input").attr("disabled", "disabled");
-            }
+				if (enable === true) {
+					$(cellSelector).find("input").removeAttr("disabled");
+				} else if (enable === false) {
+					$(cellSelector).find("input").attr("disabled", "disabled");
+				}
 
-        }
+			}
 
-    });
+		});
 
 	//TEXTAREA
-	gridform.types.text = $.extend({}, mastertype, {
-        //render the field content
-        render : function (data, cellSelector, parent) {
+	gridform.types.text = $.extend({}, gridform.types.__mastertype, {
+			//render the field content
+			render : function (data, cellSelector, parent) {
 
-            //Simple textarea
-            var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
-            var hasFeedback = (data.hasFeedback === true) ? 'has-feedback' : '';
-            var width = (data.width !== undefined) ? 'width:' + data.width : '';
-            var placeholder = (data.placeholder !== undefined) ? data.placeholder : '';
+				//Simple textarea
+				var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
+				var hasFeedback = (data.hasFeedback === true) ? 'has-feedback' : '';
+				var width = (data.width !== undefined) ? 'width:' + data.width : '';
+				var placeholder = (data.placeholder !== undefined) ? data.placeholder : '';
 
-            //var html = '<form class="form-inline" role="form" style="height:100%;">';
-            var html = '<div class="form-group ' + hasFeedback + '" style="height:100%;' + width + '">';
-            html += '   <textarea type="text" ' + disabled + ' class="form-control" style="width:100%;height:100%;resize: none;" placeholder="' + placeholder + '"></textarea>';
-            if (hasFeedback !== "") {
-                html += '   <span style="display:none;top:0;" class="' + parent.settings.icon_success + ' form-control-feedback"></span>';
-            }
-            html += '</div>';
-            //html += '</form>';
+				//var html = '<form class="form-inline" role="form" style="height:100%;">';
+				var html = '<div class="form-group ' + hasFeedback + '" style="height:100%;' + width + '">';
+				html += '   <textarea type="text" ' + disabled + ' class="form-control" style="width:100%;height:100%;resize: none;" placeholder="' + placeholder + '"></textarea>';
+				if (hasFeedback !== "") {
+					html += '   <span style="display:none;top:0;" class="' + parent.settings.icon_success + ' form-control-feedback"></span>';
+				}
+				html += '</div>';
+				//html += '</form>';
 
-            return html;
+				return html;
 
-        },
-        //set the field content
-        set : function (data, value, cellSelector, parent) {
+			},
+			//set the field content
+			set : function (data, value, cellSelector, parent) {
 
-            //Set the data in the textarea
-            if (parent.settings.mode === "edit") {
-                $(cellSelector).find("textarea").val(value);
-            } else {
-                $(cellSelector).find("textarea").val(value);
-            }
+				//Set the data in the textarea
+				if (parent.settings.mode === "edit") {
+					$(cellSelector).find("textarea").val(value);
+				} else {
+					$(cellSelector).find("textarea").val(value);
+				}
 
-        },
+			},
 
-        setPlaceholder : function (data, value, cellSelector, parent) {
-            $(cellSelector).find("textarea").attr("placeholder", value);
-        },
+			setPlaceholder : function (data, value, cellSelector, parent) {
+				$(cellSelector).find("textarea").attr("placeholder", value);
+			},
 
-        //get the field content
-        get : function (data, cellSelector) {
-            return $(cellSelector).find("textarea").val();
-        },
+			//get the field content
+			get : function (data, cellSelector) {
+				return $(cellSelector).find("textarea").val();
+			},
 
-        //get the field, input, select, etc.
-        getFieldNode : function (field, cellSelector) {
-            return $(cellSelector).find("textarea");
-        },
+			//get the field, input, select, etc.
+			getFieldNode : function (field, cellSelector) {
+				return $(cellSelector).find("textarea");
+			},
 
-        //flush the field
-        flush : function (cellSelector, parent) {
+			//flush the field
+			flush : function (cellSelector, parent) {
 
-            $(cellSelector).find("textarea").val("");
+				$(cellSelector).find("textarea").val("");
 
-        },
+			},
 
-        enable : function (data, enable, cellSelector) {
+			enable : function (data, enable, cellSelector) {
 
-            //If readonly this is always disabled....
-            if (data.readonly === true)
-                return false;
+				//If readonly this is always disabled....
+				if (data.readonly === true)
+					return false;
 
-            if (enable === true) {
-                $(cellSelector).find("textarea").removeAttr("disabled");
-            } else if (enable === false) {
-                $(cellSelector).find("textarea").attr("disabled", "disabled");
-            }
+				if (enable === true) {
+					$(cellSelector).find("textarea").removeAttr("disabled");
+				} else if (enable === false) {
+					$(cellSelector).find("textarea").attr("disabled", "disabled");
+				}
 
-        },
+			},
 
-        afterDOMCreation : function (data, cellSelector, parent) {
+			afterDOMCreation : function (data, cellSelector, parent) {
 
-            //Get the textarea the full size of the td!
-            //Since HTML5 the rowspan and fill of a td is broken!
-            //Wait a little until the table layout is ready and the computation can be successfull :)
-            //BAD HACK!!! TODO!
-            setTimeout(function () {
-                var height = $(cellSelector).height();
-                $(cellSelector).find("div").height(height);
+				//Get the textarea the full size of the td!
+				//Since HTML5 the rowspan and fill of a td is broken!
+				//Wait a little until the table layout is ready and the computation can be successfull :)
+				//BAD HACK!!! TODO!
+				setTimeout(function () {
+					var height = $(cellSelector).height();
+					$(cellSelector).find("div").height(height);
 
-            }, 50);
-        }
+				}, 50);
+			}
 
-    });
+		});
 
 	//SELECT-LIST
-	gridform.types.select = $.extend({}, mastertype, {
-        //render the field content
-        render : function (data, cellSelector, parent) {
-
-            //Simple textarea
-            var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
-            var hasFeedback = (data.hasFeedback === true) ? 'has-feedback' : '';
-            var width = (data.width !== undefined) ? 'width:' + data.width : '';
-
-            //var html = '<form class="form-inline" role="form">';
-            var html = '<div class="form-group ' + hasFeedback + '" style="' + width + '">';
-            html += '   <select ' + disabled + ' class="form-control" style="width:100%;"></select>';
-            if (hasFeedback !== "") {
-                html += '   <span style="display:none;top:0;" class="' + parent.settings.icon_success + ' form-control-feedback"></span>';
-            }
-            html += '</div>';
-            //html += '</form>';
-
-            return html;
-
-        },
-        //set the field value
-        set : function (data, value, cellSelector, parent) {
-
-            //Set the data in the textarea
-            if (parent.settings.mode === "edit") {
-                $(cellSelector).find("select").val(value);
-            } else {
-                $(cellSelector).find("select").val(value);
-            }
-
-        },
-
-        //get the field value
-        get : function (data, cellSelector) {
-            return $(cellSelector).find("select").val();
-        },
-
-        //get the field, input, select, etc.
-        getFieldNode : function (field, cellSelector) {
-            return $(cellSelector).find("select");
-        },
-
-        //flush the field
-        flush : function (cellSelector, parent) {
-
-            $(cellSelector).find("select").val("");
-
-        },
-
-        enable : function (data, enable, cellSelector) {
-
-            //If readonly this is always disabled....
-            if (data.readonly === true)
-                return false;
-
-            if (enable === true) {
-                $(cellSelector).find("select").removeAttr("disabled");
-            } else if (enable === false) {
-                $(cellSelector).find("select").attr("disabled", "disabled");
-            }
-
-        },
-
-        afterDOMCreation : function (data, cellSelector, parent) {
-
-            /*
-             * internal function
-             */
-            function fillDataInSelect(selection) {
-                var elem = $(cellSelector).find("select");
-                elem.html("");
-
-                //Placeholder without value
-                if (data.withoutPlaceholder !== true) {
-                    elem.append('<option value="">' + parent.settings.language.selectPlaceholder + '</option>');
-                }
-
-                for (var x in selection) {
-                    var selected = (data.selected == selection[x].key) ? 'selected' : '';
-                    elem.append('<option ' + selected + ' value="' + selection[x].key + '">' + selection[x].value + '</option>');
-                }
-                //if the field was set to waiting...then reset the status
-                if ($(cellSelector).find("div.form-group").data("status") === "waiting") {
-                    parent.resetFieldMarks(data.id);
-                    if (parent.settings.mode === "edit") {
-                        parent.enable(true, data.id);
-                    }
-                }
-            };
-
-            if (data.selection === undefined)
-                return false;
-            if (typeof data.selection === "function") {
-                //Call the function and fill in the callback for filling data structure in the field
-                //Before set the field to waiting ... until it gets the data (maybe a async call to a backend ...)
-                parent.setWaiting(data.id);
-                var elem = $(cellSelector).find("select");
-                elem.append('<option value="" selected>' + parent.settings.language.loading + '</option>');
-
-                data.selection(fillDataInSelect);
-
-            } else if (typeof(data.selection) === "object") {
-                //The options are set in the options directly
-                fillDataInSelect(data.selection);
-            }
-
-        }
-
-    });
-
-	gridform.types.radio = $.extend({}, mastertype, {
-        //render the field content
-        render : function (data, cellSelector, parent) {
-
-            //Simple textarea
-            var width = (data.width !== undefined) ? 'width:' + data.width : '';
-            var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
-            //Should font-Awesome be used?
-            var fontA = (parent.settings.useFontAwesome === true) ? 'fontA' : '';
-            //inline vs normal
-            var extraStyle = (data.inline === true) ? 'display:inline-block;padding-right:10px;' : '';
-
-            var html = '<div class="form-group">';
-
-            for (var x in data.selection) {
-                var uniqueId = parent.settings.name + '_' + data.id + '_' + x;
-                html += '<div class="radio ' + fontA + '" style="' + extraStyle + '">';
-                html += '<input type="radio" class="' + fontA + '" id="' + uniqueId + '" ' + disabled + ' name="' + data.id + '_radios" value="' + data.selection[x].key + '">';
-                html += '<label class="' + disabled + '" for="' + uniqueId + '">';
-                html += data.selection[x].value;
-                html += '</label>';
-                html += '</div>';
-            }
-
-            html += '</div>';
-
-            return html;
-
-        },
-        //set the field value
-        set : function (data, value, cellSelector, parent) {
-            //Set chosen radio button
-            $(cellSelector).find("input[value=" + value + "]").prop("checked", true);
-
-        },
-
-        //get the field value
-        get : function (data, cellSelector) {
-            return $(cellSelector).find("input:checked").val();
-        },
-
-        //get the field, input, select, etc.
-        getFieldNode : function (field, cellSelector) {
-            return $(cellSelector).find("select");
-        },
-
-        //flush the field
-        flush : function (cellSelector, parent) {
-
-            $(cellSelector).find("input").prop("checked", false);
-
-        },
-
-        enable : function (data, enable, cellSelector) {
-
-            //If readonly this is always disabled....
-            if (data.readonly === true)
-                return false;
-
-            if (enable === true) {
-                $(cellSelector).find("input").removeAttr("disabled");
-                //set the label enabled too
-                $(cellSelector).find("label").removeClass("disabled");
-            } else if (enable === false) {
-                $(cellSelector).find("input").attr("disabled", "disabled");
-                //set the label enabled too
-                $(cellSelector).find("label").addClass("disabled");
-            }
-
-        }
-
-    });
-
-	gridform.types.checkbox = $.extend({}, mastertype, {
-        //render the field content
-        render : function (data, cellSelector, parent) {
-
-            //Simple textarea
-            var width = (data.width !== undefined) ? 'width:' + data.width : '';
-            var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
-            //Should font-Awesome be used?
-            var fontA = (parent.settings.useFontAwesome === true) ? 'fontA' : '';
-            //inline vs normal
-            var extraStyle = (data.inline === true) ? 'display:inline-block;padding-right:10px;' : '';
-
-            var html = '<div class="form-group">';
-
-            for (var x in data.selection) {
-                var uniqueId = parent.settings.name + '_' + data.id + '_' + x;
-                html += '<div class="checkbox ' + fontA + '" style="' + extraStyle + '">';
-
-                html += '<input type="checkbox" class="' + fontA + '" id="' + uniqueId + '" ' + disabled + ' name="' + data.selection[x].key + '" value="' + data.selection[x].key + '"> ';
-                html += '<label class="' + disabled + '" for="' + uniqueId + '">';
-                html += data.selection[x].value;
-                html += '</label>';
-                html += '</div>';
-            }
-
-            html += '</div>';
-
-            return html;
-
-        },
-        //set the field value
-        set : function (data, value, cellSelector, parent) {
-
-            $(cellSelector).find("input").prop("checked", false);
-
-            if (typeof value === "object") {
-                for (var x in value) {
-                    $(cellSelector).find("input[name=" + value[x] + "]").prop("checked", true);
-                }
-            } else {
-
-                $(cellSelector).find("input[name='" + value + "']").prop("checked", true);
-            }
-
-        },
-
-        //get the field value
-        get : function (data, cellSelector) {
-            var boxes = $(cellSelector).find("input:checked");
-            var data = [];
-            for (var x = 0; x < boxes.length; x++) {
-                data.push($(boxes[x]).val());
-            }
-            return data;
-        },
-
-        //get the field, input, select, etc.
-        getFieldNode : function (field, cellSelector) {
-            return $(cellSelector).find("select");
-        },
-
-        //flush the field
-        flush : function (cellSelector, parent) {
-
-            $(cellSelector).find("input").prop("checked", false);
-
-        },
-
-        enable : function (data, enable, cellSelector) {
-
-            //If readonly this is always disabled....
-            if (data.readonly === true)
-                return false;
-
-            if (enable === true) {
-                $(cellSelector).find("input").removeAttr("disabled");
-                //set the label enabled too
-                $(cellSelector).find("label").removeClass("disabled");
-            } else if (enable === false) {
-                $(cellSelector).find("input").attr("disabled", "disabled");
-                //set the label disabled too
-                $(cellSelector).find("label").addClass("disabled");
-
-            }
-
-        }
-
-    });
+	gridform.types.select = $.extend({}, gridform.types.__mastertype, {
+			//render the field content
+			render : function (data, cellSelector, parent) {
+
+				//Simple textarea
+				var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
+				var hasFeedback = (data.hasFeedback === true) ? 'has-feedback' : '';
+				var width = (data.width !== undefined) ? 'width:' + data.width : '';
+
+				var html = '<div class="form-group ' + hasFeedback + '" style="' + width + '">';
+				html += '   <select ' + disabled + ' class="form-control" style="width:100%;"></select>';
+				if (hasFeedback !== "") {
+					html += '   <span style="display:none;top:0;" class="' + parent.settings.icon_success + ' form-control-feedback"></span>';
+				}
+				html += '</div>';
+
+				return html;
+
+			},
+			//set the field value
+			set : function (data, value, cellSelector, parent) {
+
+				//Set the data in the textarea
+				if (parent.settings.mode === "edit") {
+					$(cellSelector).find("select").val(value);
+				} else {
+					$(cellSelector).find("select").val(value);
+				}
+
+			},
+
+			//get the field value
+			get : function (data, cellSelector) {
+				return $(cellSelector).find("select").val();
+			},
+
+			//get the field, input, select, etc.
+			getFieldNode : function (field, cellSelector) {
+				return $(cellSelector).find("select");
+			},
+
+			//flush the field
+			flush : function (cellSelector, parent) {
+
+				$(cellSelector).find("select").val("");
+
+			},
+
+			enable : function (data, enable, cellSelector) {
+
+				//If readonly this is always disabled....
+				if (data.readonly === true)
+					return false;
+
+				if (enable === true) {
+					$(cellSelector).find("select").removeAttr("disabled");
+				} else if (enable === false) {
+					$(cellSelector).find("select").attr("disabled", "disabled");
+				}
+
+			},
+
+			afterDOMCreation : function (data, cellSelector, parent) {
+
+				/*
+				 * internal function
+				 */
+				function fillDataInSelect(selection) {
+					var elem = $(cellSelector).find("select");
+					elem.html("");
+
+					//Placeholder without value
+					if (data.withoutPlaceholder !== true) {
+						elem.append('<option value="">' + parent.settings.language.selectPlaceholder + '</option>');
+					}
+
+					for (var x in selection) {
+						var selected = (data.selected == selection[x].key) ? 'selected' : '';
+						elem.append('<option ' + selected + ' value="' + selection[x].key + '">' + selection[x].value + '</option>');
+					}
+					//if the field was set to waiting...then reset the status
+					if ($(cellSelector).find("div.form-group").data("status") === "waiting") {
+						parent.resetFieldMarks(data.id);
+						if (parent.settings.mode === "edit") {
+							parent.enable(true, data.id);
+						}
+					}
+				};
+
+				if (data.selection === undefined)
+					return false;
+				if (typeof data.selection === "function") {
+					//Call the function and fill in the callback for filling data structure in the field
+					//Before set the field to waiting ... until it gets the data (maybe a async call to a backend ...)
+					parent.setWaiting(data.id);
+					var elem = $(cellSelector).find("select");
+					elem.append('<option value="" selected>' + parent.settings.language.loading + '</option>');
+
+					data.selection(fillDataInSelect);
+
+				} else if (typeof(data.selection) === "object") {
+					//The options are set in the options directly
+					fillDataInSelect(data.selection);
+				}
+
+			}
+
+		});
+
+        gridform.types.radio = $.extend({}, gridform.types.__mastertype, {
+			//render the field content
+			render : function (data, cellSelector, parent) {
+
+				//Simple textarea
+				var width = (data.width !== undefined) ? 'width:' + data.width : '';
+				var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
+				//Should font-Awesome be used?
+				var fontA = (parent.settings.useFontAwesome === true) ? 'fontA' : '';
+				//inline vs normal
+				var extraStyle = (data.inline === true) ? 'display:inline-block;padding-right:10px;' : '';
+
+				var html = '<div class="form-group">';
+
+				for (var x in data.selection) {
+					var uniqueId = parent.settings.name + '_' + data.id + '_' + x;
+					html += '<div class="radio ' + fontA + '" style="' + extraStyle + '">';
+					html += '<input type="radio" class="' + fontA + '" id="' + uniqueId + '" ' + disabled + ' name="' + data.id + '_radios" value="' + data.selection[x].key + '">';
+					html += '<label class="' + disabled + '" for="' + uniqueId + '">';
+					html += data.selection[x].value;
+					html += '</label>';
+					html += '</div>';
+				}
+
+				html += '</div>';
+
+				return html;
+
+			},
+			//set the field value
+			set : function (data, value, cellSelector, parent) {
+				//Set chosen radio button
+				$(cellSelector).find("input[value=" + value + "]").prop("checked", true);
+
+			},
+
+			//get the field value
+			get : function (data, cellSelector) {
+				return $(cellSelector).find("input:checked").val();
+			},
+
+			//get the field, input, select, etc.
+			getFieldNode : function (field, cellSelector) {
+				return $(cellSelector).find("select");
+			},
+
+			//flush the field
+			flush : function (cellSelector, parent) {
+
+				$(cellSelector).find("input").prop("checked", false);
+
+			},
+
+			enable : function (data, enable, cellSelector) {
+
+				//If readonly this is always disabled....
+				if (data.readonly === true)
+					return false;
+
+				if (enable === true) {
+					$(cellSelector).find("input").removeAttr("disabled");
+					//set the label enabled too
+					$(cellSelector).find("label").removeClass("disabled");
+				} else if (enable === false) {
+					$(cellSelector).find("input").attr("disabled", "disabled");
+					//set the label enabled too
+					$(cellSelector).find("label").addClass("disabled");
+				}
+
+			}
+
+		});
+        
+        
+    gridform.types.iradio = $.extend({}, gridform.types.__mastertype, {
+			//render the field content
+			render : function (data, cellSelector, parent) {
+
+				//Simple textarea
+				var width = (data.width !== undefined) ? 'width:' + data.width : '';
+				var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
+				//inline vs normal
+				var extraStyle = (data.inline === true) ? 'display:inline-block;padding-right:10px;' : '';
+
+				var html = '<div class="form-group">';
+
+				for (var x in data.selection) {
+					var uniqueId = parent.settings.name + '_' + data.id + '_' + x;
+					html += '<div class="radio fontA" style="' + extraStyle + '">';
+					html += '<input type="radio" class="fontA" id="' + uniqueId + '" ' + disabled + ' name="' + data.id + '_radios" value="' + data.selection[x].key + '">';
+					html += '<label class="' + disabled + '" for="' + uniqueId + '">';
+					html += data.selection[x].value;
+					html += '</label>';
+					html += '</div>';
+				}
+
+				html += '</div>';
+
+				return html;
+
+			},
+			//set the field value
+			set : function (data, value, cellSelector, parent) {
+				//Set chosen radio button
+   				$(cellSelector).find("input[value=" + value + "]").iCheck("check");
+
+			},
+
+			//get the field value
+			get : function (data, cellSelector) {
+				return $(cellSelector).find("input:checked").val();
+			},
+
+			//get the field, input, select, etc.
+			getFieldNode : function (field, cellSelector) {
+				return $(cellSelector).find("input");
+			},
+
+			//flush the field
+			flush : function (cellSelector, parent) {                
+                $(cellSelector).find("input").iCheck("uncheck");
+			},
+            
+            afterDOMCreation : function (data, cellSelector, parent){
+                     
+                $(cellSelector).find("input").iCheck({
+                    radioClass: 'iradio_' + parent.settings.useICheck,
+                  }); 
+
+            },  
+
+			enable : function (data, enable, cellSelector) {
+
+				//If readonly this is always disabled....
+				if (data.readonly === true)
+					return false;
+
+				if (enable === true) {
+			        $(cellSelector).find("input").iCheck("enable");
+					//set the label enabled too
+					$(cellSelector).find("label").removeClass("disabled");
+				} else if (enable === false) {
+					$(cellSelector).find("input").iCheck("disable");
+					//set the label enabled too
+					$(cellSelector).find("label").addClass("disabled");
+				}
+
+			}
+
+		});    
+        
+
+	gridform.types.checkbox = $.extend({}, gridform.types.__mastertype, {
+			//render the field content
+			render : function (data, cellSelector, parent) {
+
+				//Simple checkbox
+				var width = (data.width !== undefined) ? 'width:' + data.width : '';
+				var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
+				//Should font-Awesome be used?
+				var fontA = (parent.settings.useFontAwesome === true) ? 'fontA' : '';
+				//inline vs normal
+				var extraStyle = (data.inline === true) ? 'display:inline-block;padding-right:10px;' : '';
+
+				var html = '<div class="form-group">';
+
+				for (var x in data.selection) {
+					var uniqueId = parent.settings.name + '_' + data.id + '_' + x;
+					html += '<div class="checkbox ' + fontA + '" style="' + extraStyle + '">';
+
+					html += '<input type="checkbox" class="' + fontA + '" id="' + uniqueId + '" ' + disabled + ' name="' + data.selection[x].key + '" value="' + data.selection[x].key + '"> ';
+					html += '<label class="' + disabled + '" for="' + uniqueId + '">';
+					html += data.selection[x].value;
+					html += '</label>';
+					html += '</div>';
+				}
+
+				html += '</div>';
+
+				return html;
+
+			},
+			//set the field value
+			set : function (data, value, cellSelector, parent) {
+
+				$(cellSelector).find("input").prop("checked", false);
+
+				if (typeof value === "object") {
+					for (var x in value) {
+						$(cellSelector).find("input[name=" + value[x] + "]").prop("checked", true);
+					}
+				} else {
+
+					$(cellSelector).find("input[name='" + value + "']").prop("checked", true);
+				}
+
+			},
+
+			//get the field value
+			get : function (data, cellSelector) {
+				var boxes = $(cellSelector).find("input:checked");
+				var data = [];
+				for (var x = 0; x < boxes.length; x++) {
+					data.push($(boxes[x]).val());
+				}
+				return data;
+			},
+
+			//get the field, input, select, etc.
+			getFieldNode : function (field, cellSelector) {
+				return $(cellSelector).find("select");
+			},
+
+			//flush the field
+			flush : function (cellSelector, parent) {
+
+				$(cellSelector).find("input").prop("checked", false);
+
+			},
+
+			enable : function (data, enable, cellSelector) {
+
+				//If readonly this is always disabled....
+				if (data.readonly === true)
+					return false;
+
+				if (enable === true) {
+					$(cellSelector).find("input").removeAttr("disabled");
+					//set the label enabled too
+					$(cellSelector).find("label").removeClass("disabled");
+				} else if (enable === false) {
+					$(cellSelector).find("input").attr("disabled", "disabled");
+					//set the label disabled too
+					$(cellSelector).find("label").addClass("disabled");
+
+				}
+
+			}
+
+		});
+        
+        
+    gridform.types.icheckbox = $.extend({}, gridform.types.__mastertype, {
+			//render the field content
+			render : function (data, cellSelector, parent) {
+                
+				//Simple checkbox
+				var width = (data.width !== undefined) ? 'width:' + data.width : '';
+				var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';				
+				//inline vs normal
+				var extraStyle = (data.inline === true) ? 'display:inline-block;padding-right:10px;' : '';
+
+				var html = '<div class="form-group">';
+
+				for (var x in data.selection) {
+					var uniqueId = parent.settings.name + '_' + data.id + '_' + x;
+					html += '<div class="checkbox fontA" style="' + extraStyle + '">';
+
+					html += '<input type="checkbox" class="fontA" id="' + uniqueId + '" ' + disabled + ' name="' + data.selection[x].key + '" value="' + data.selection[x].key + '"> ';
+					html += '<label class="' + disabled + '" for="' + uniqueId + '">';
+					html += data.selection[x].value;
+					html += '</label>';
+					html += '</div>';
+				}
+
+				html += '</div>';
+
+				return html;
+
+			},
+			//set the field value
+			set : function (data, value, cellSelector, parent) {
+
+				$(cellSelector).find("input").iCheck("uncheck");
+
+				if (typeof value === "object") {
+					for (var x in value) {
+						$(cellSelector).find("input[name=" + value[x] + "]").iCheck("check");
+					}
+				} else {
+
+					$(cellSelector).find("input[name='" + value + "']").iCheck("check");
+				}
+
+			},
+
+			//get the field value
+			get : function (data, cellSelector) {
+				var boxes = $(cellSelector).find("input:checked");
+				var data = [];
+				for (var x = 0; x < boxes.length; x++) {
+					data.push($(boxes[x]).val());
+				}
+				return data;
+			},
+
+			//get the field, input, select, etc.
+			getFieldNode : function (field, cellSelector) {
+				return $(cellSelector).find("input");
+			},
+
+			//flush the field
+			flush : function (cellSelector, parent) {
+
+				$(cellSelector).find("input").iCheck("uncheck");
+
+			},
+            
+            afterDOMCreation : function (data, cellSelector, parent){
+                     
+                $(cellSelector).find("input").iCheck({
+                    checkboxClass: 'icheckbox_' + parent.settings.useICheck,
+                  }); 
+
+            },            
+
+			enable : function (data, enable, cellSelector) {
+
+				//If readonly this is always disabled....
+				if (data.readonly === true)
+					return false;
+
+				if (enable === true) {			
+                    $(cellSelector).find("input").iCheck('enable');                    
+					//set the label enabled too
+					$(cellSelector).find("label").removeClass("disabled");
+				} else if (enable === false) {
+					$(cellSelector).find("input").iCheck('disable');
+					//set the label disabled too
+					$(cellSelector).find("label").addClass("disabled");
+
+				}
+
+			}
+
+		});    
+        
 
 	/**
 	 * Boolean data type for the grid
-	 * 
+	 *
 	 */
-	gridform.types.boolean = $.extend({}, mastertype, {
-        //render the field content
-        render : function (data, cellSelector, parent) {
+	gridform.types.boolean = $.extend({}, gridform.types.__mastertype, {
+			//render the field content
+			render : function (data, cellSelector, parent) {
 
-            //Simple textarea
-            var width = (data.width !== undefined) ? 'width:' + data.width : '';
-            var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
-            //Should font-Awesome be used?
-            var fontA = (parent.settings.useFontAwesome === true) ? 'fontA' : '';
+				//Simple textarea
+				var width = (data.width !== undefined) ? 'width:' + data.width : '';
+				var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
+				//Should font-Awesome be used or iCheck ... both need some other css
+				var fontA = (parent.settings.useFontAwesome === true) ? 'fontA' : '';
 
-            var html = '<div class="form-group">';
+				var html = '<div class="form-group">';
 
-            var uniqueId = parent.settings.name + '_' + data.id;
-            html += '<div class="checkbox ' + fontA + '">';
-            html += '<input type="checkbox" class="' + fontA + '" id="' + uniqueId + '" ' + disabled + ' name="" value="1"> <label for="' + uniqueId + '">&nbsp;</label>';
-            html += '</div>';
-            html += '</div>';
+				var uniqueId = parent.settings.name + '_' + data.id;
+				html += '<div class="checkbox ' + fontA + '">';
+				html += '<input type="checkbox" class="' + fontA + '" id="' + uniqueId + '" ' + disabled + ' name="" value="1"> <label for="' + uniqueId + '">&nbsp;</label>';
+				html += '</div>';
+				html += '</div>';
 
-            return html;
+				return html;
 
-        },
-        //set the field value
-        set : function (data, value, cellSelector, parent) {
+			},
+			//set the field value
+			set : function (data, value, cellSelector, parent) {
+                
+				$(cellSelector).find("input").prop("checked", false);
+				if (value === true) {
+					$(cellSelector).find("input").prop("checked", true);
+				} else {
+					$(cellSelector).find("input").prop("checked", false);
+				}
 
-            $(cellSelector).find("input").prop("checked", false);
+			},
 
-            if (value === true) {
-                $(cellSelector).find("input[name='" + value + "']").prop("checked", true);
-            } else {
-                $(cellSelector).find("input[name='" + value + "']").prop("checked", false);
-            }
+			//get the field value
+			get : function (data, cellSelector) {
+				var boxes = $(cellSelector).find("input:checked");
+				if (boxes.length > 0) {
+					return true;
+				} else {
+					return false;
+				}
+			},
 
-        },
+			//get the field, input, select, etc.
+			getFieldNode : function (field, cellSelector) {
+				return $(cellSelector).find("input");
+			},
 
-        //get the field value
-        get : function (data, cellSelector) {
-            var boxes = $(cellSelector).find("input:checked");
-            if (boxes.length > 0) {
-                return true;
-            } else {
-                return false;
-            }
-        },
+			//flush the field
+			flush : function (cellSelector, parent) {
 
-        //get the field, input, select, etc.
-        getFieldNode : function (field, cellSelector) {
-            return $(cellSelector).find("input");
-        },
+				$(cellSelector).find("input").prop("checked", false);
 
-        //flush the field
-        flush : function (cellSelector, parent) {
+			},     
+                      
 
-            $(cellSelector).find("input").prop("checked", false);
+			enable : function (data, enable, cellSelector) {
 
-        },
+				//If readonly this is always disabled....
+				if (data.readonly === true)
+					return false;
 
-        enable : function (data, enable, cellSelector) {
+				if (enable === true) {
+					$(cellSelector).find("input").removeAttr("disabled");
+				} else if (enable === false) {
+					$(cellSelector).find("input").attr("disabled", "disabled");
+				}
 
-            //If readonly this is always disabled....
-            if (data.readonly === true)
-                return false;
+			}
 
-            if (enable === true) {
-                $(cellSelector).find("input").removeAttr("disabled");
-            } else if (enable === false) {
-                $(cellSelector).find("input").attr("disabled", "disabled");
-            }
+		});
+        
+        
+    /**
+	 * Boolean data type for the grid
+	 *
+	 */
+	gridform.types.iboolean = $.extend({}, gridform.types.__mastertype, {
+			//render the field content
+			render : function (data, cellSelector, parent) {
 
-        }
+				//Simple textarea
+				var width = (data.width !== undefined) ? 'width:' + data.width : '';
+				var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
+		
+				var html = '<div class="form-group">';
 
-    });
+				var uniqueId = parent.settings.name + '_' + data.id;
+				html += '<div class="checkbox fontA">';
+				html += '<input type="checkbox" class="fontA" id="' + uniqueId + '" ' + disabled + ' name="" value="1"> <label for="' + uniqueId + '">&nbsp;</label>';
+				html += '</div>';
+				html += '</div>';
 
+				return html;
+
+			},
+			//set the field value
+			set : function (data, value, cellSelector, parent) {
+                
+				if (value === true){
+                    $(cellSelector).find("input").iCheck("check");
+				} else {
+					$(cellSelector).find("input").iCheck("uncheck");
+				}
+
+			},
+
+			//get the field value
+			get : function (data, cellSelector) {
+				var boxes = $(cellSelector).find("input:checked");
+				if (boxes.length > 0) {
+					return true;
+				} else {
+					return false;
+				}
+			},
+
+			//get the field, input, select, etc.
+			getFieldNode : function (field, cellSelector) {
+				return $(cellSelector).find("input");
+			},
+
+			//flush the field
+			flush : function (cellSelector, parent) {
+
+				$(cellSelector).find("input").iCheck("uncheck");
+
+			},
+            
+            afterDOMCreation : function (data, cellSelector, parent){
+                     
+                $(cellSelector).find("input").iCheck({
+                    checkboxClass: 'icheckbox_' + parent.settings.useICheck,
+                  }); 
+
+            }, 
+
+			enable : function (data, enable, cellSelector) {
+
+				//If readonly this is always disabled....
+				if (data.readonly === true)
+					return false;
+
+				if (enable === true) {
+                    $(cellSelector).find("input").iCheck("enable");
+				} else if (enable === false) {
+					$(cellSelector).find("input").iCheck("disable");
+				}
+			}
+		});     
 
 	// Headline for a content area
-	gridform.types.headline = $.extend({}, mastertype, {
+	gridform.types.headline = $.extend({}, gridform.types.__mastertype, {
 
-        labelAllowed : false,
-        containsData : false,
+			labelAllowed : false,
+			containsData : false,
 
-        //render the field content
-        render : function (data, cellSelector, parent) {
-            var html = '<div class="headline">' + data.label + '</div>';
-            return html;
-        }
-    });
+			//render the field content
+			render : function (data, cellSelector, parent) {
+				var html = '<div class="headline">' + data.label + '</div>';
+				return html;
+			}
+		});
 
 	// Separation line
-	gridform.types.separator = $.extend({}, mastertype, {
+	gridform.types.separator = $.extend({}, gridform.types.__mastertype, {
 
 			labelAllowed : false,
 			containsData : false,
@@ -1826,23 +2124,32 @@ var gridform = gridform || {};
 			}
 		});
 
-        
 	/**
 	 * Extend the built-in types
-     * 
-     * @param type {String} Name of the type
-     * @param object {Object} Complete object with all the field functions that are overwriting the existing ones in the mastertype
+	 *
+	 * @param type {String} Name of the type
+	 * @param object {Object} Complete object with all the field functions that are overwriting the existing ones in the mastertype
 	 */
-	gridform.addType = function (type, object) {
-		gridform.types[type] = $.extend({}, mastertype, object);
+	gridform.addType = function (type, object, originalType) {
+    
+        if(originalType !== undefined && gridform.types[originalType]!==undefined){
+            originalType = gridform.types[originalType];
+        } else {
+            originalType = {};
+        }
+    
+		gridform.types[type] = $.extend({}, gridform.types.__mastertype, originalType, object);
 	};
+    
+    
 
+	
 	/**
 	 * Set the default values for the settings (for every instantiated gridform object)
-     *
+	 *
 	 * This can be useful for a standard form for a whole application
-     *
-     * @param object {Object} Settings object
+	 *
+	 * @param object {Object} Settings object
 	 */
 	gridform.setDefaults = function (settings) {
 		//Overwrite the default settings with the given values...
@@ -1850,10 +2157,10 @@ var gridform = gridform || {};
 	};
 
 	/**
-    * Add gridform library as jquery plugin 
-    * 
-    * @ignore
-    */
+	 * Add gridform library as jquery plugin
+	 *
+	 * @ignore
+	 */
 	$.fn.gridform = function (settings) {
 
 		//Already existing with this name, then stop right now!
@@ -1862,11 +2169,9 @@ var gridform = gridform || {};
 		}
 		//Create a new object of gridform
 		var obj = new gridform.form(settings);
-		if (obj === false)
-			return false;
+		if (obj === false)return false;
 		//If the function is called for an already specified target, then render it to that element!
-		if ($(this).length === 1)
-			obj.render(this);
+		if ($(this).length === 1)obj.render(this);
 
 		//if no name is given, the object will not be available via direct access like "gridform.forms[<name>]"
 		//but the object is returned here directly...
