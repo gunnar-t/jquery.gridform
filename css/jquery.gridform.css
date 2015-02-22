@@ -73,9 +73,12 @@ table.gridform div.radio {
    margin-top:5px; 
 }
 
+table.gridform label {
+    padding-left: 5px;
+}
+
 
 /* custom checkboxes with font awesome */
-
 table.gridform div.fontA{
     margin-top:6px;
     margin-bottom:8px;
@@ -107,3 +110,11 @@ input[type=radio].fontA + label:before { content: "\f10c"; letter-spacing: 10px;
 input[type=radio].fontA:checked + label:before { content: "\f192"; letter-spacing: 10px; } 
 input[type=radio].fontA:disabled  + label:before{ color:gray; }
 input[type=radio].fontA + label.disabled { color:gray;}
+
+/*** DEBUG-Styles  **/
+table.gridform.gridformDebug, td.gridform_label.gridformDebug,  td.gridform_content.gridformDebug {    
+  border: 1px solid #ccc;
+  vertical-align: top;
+  padding:2px;
+
+}

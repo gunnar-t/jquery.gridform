@@ -20,21 +20,14 @@ gridform.ui = gridform.ui || {};
     gridform.form.prototype.defaultSettings.icon_warning  = 'red warning';
     gridform.form.prototype.defaultSettings.icon_error  = 'red remove';
 
-	console.log("Semantic ui");
+    
 	/**
-	 * Abstract field type
-	 *
-	 * All fields extend this type and overwrite some of the methods.
-	 *
+	 * These functions need to be overwritten as well (the mastertype is not correct for semantic ui)
+     *	
 	 * @class mastertype
-	 */
-	var mastertype = {
-
-		/** @property {boolean} is a label allowed (e.g. the headline or separator has no label, just a field content) */
-		labelAllowed : true,
-		//if this field contains data (and can be validated!)
-		containsData : true,
-
+	 */     
+	var mastertypeOverwrites = {
+        
 		/**
 		 * Set a label for the type
 		 *
@@ -58,81 +51,6 @@ gridform.ui = gridform.ui || {};
 			return html;
 
 		},
-
-		/**
-		 * Render the field
-		 *
-		 * @memberOf mastertype
-		 * @param data {Object} JSON object with config data of the field
-		 * @param cellSelectorLabel {string} String with the cell selector expression
-		 * @param parent {Object} gridform object
-		 */
-		render : function (data, cellSelector, parent) {
-			return '';
-		},
-
-		/**
-		 * Set the field value
-		 *
-		 * @memberOf mastertype
-		 * @param data {Object} JSON object with config data of the field
-		 * @param value {String|Object} value of the field
-		 * @param cellSelectorLabel {string} String with the cell selector expression
-		 * @param parent {Object} gridform object
-		 */
-		set : function (data, value, cellSelector, parent) {},
-
-		/**
-		 * Set a placeholder for the field
-		 *
-		 * @memberOf mastertype
-		 * @param data {Object} JSON object with config data of the field
-		 * @param value {String} value of the placeholder
-		 * @param cellSelectorLabel {string} String with the cell selector expression
-		 * @param parent {Object} gridform object
-		 */
-		setPlaceholder : function (data, value, cellSelector, parent) {
-			return '';
-		},
-
-		/**
-		 * Returns the value of the field
-		 *
-		 * @memberOf mastertype
-		 * @param data {Object} JSON object with config data of the field
-		 * @param cellSelectorLabel {string} String with the cell selector expression
-		 * @returns {Object|String} returns a string or more complex data (depends on the field type)
-		 */
-		get : function (data, cellSelector) {},
-
-		/**
-		 * Flush/Reset the field
-		 *
-		 * @memberOf mastertype
-		 * @param cellSelectorLabel {string} String with the cell selector expression
-		 * @param parent {Object} gridform object
-		 */
-		flush : function (cellSelector, parent) {},
-
-		/**
-		 * Enable/disable the field
-		 *
-		 * @memberOf mastertype
-		 * @param field {Object} JSON object with config data of the field
-		 * @param enable {Boolean} True or false for enabling and disabling of the field
-		 * @param cellSelectorLabel {string} String with the cell selector expression
-		 */
-		enable : function (field, enable, cellSelector) {},
-
-		/**
-		 * Get the HTML node (representation) of the field
-		 *
-		 * @memberOf mastertype
-		 * @param field {Object} JSON object with config data of the field
-		 * @param cellSelectorLabel {string} String with the cell selector expression
-		 * @returns {Object} HTML node (the field from the DOM)
-		 */
-		getFieldNode : function (field, cellSelector) {},
 
 		/**
 		 * Set the field status
@@ -164,8 +82,8 @@ gridform.ui = gridform.ui || {};
 		 */
 		setError : function (field, error, cellSelectorLabel, cellSelectorContent, parent) {
 			
-            $(cellSelectorContent).find("div.field").addClass("error");
-            $(cellSelectorLabel).find("div.field").addClass("error");
+            $(cellSelectorContent).find(".field").addClass("error");
+            $(cellSelectorLabel).find(".field").addClass("error");
            
             //set the error
 			this.setStatus(field, 'error', cellSelectorLabel, cellSelectorContent, parent);
@@ -205,10 +123,10 @@ gridform.ui = gridform.ui || {};
 			this.setStatus(field, 'warning', cellSelectorLabel, cellSelectorContent, parent);
 			//set warning text            
             //Show tooltip
-            $(cellSelectorContent).find("div.field").data("content",message).popup({transition:'fade'});
+            $(cellSelectorContent).find(".field").data("content",message).popup({transition:'fade'});
             
             if (parent.settings.showTooltipInstantly === true) {
-				$(cellSelectorContent).find("div.field").popup('show');
+				$(cellSelectorContent).find(".field").popup('show');
 			}
 
 		},
@@ -243,10 +161,10 @@ gridform.ui = gridform.ui || {};
 		 */
 		resetFieldMark : function (data, cellSelectorLabel, cellSelectorContent, parent) {
 			//Delete all classes
-			$(cellSelectorLabel).find("div").removeClass("error").removeClass("success").removeClass("warning");
-			$(cellSelectorContent).find("div.ui").removeClass("error").removeClass("success").removeClass("warning").data("status", "");
+			$(cellSelectorLabel).find('.field').removeClass("error").removeClass("success").removeClass("warning");
+			$(cellSelectorContent).find(".field").removeClass("error").removeClass("success").removeClass("warning").data("status", "");
 			//delete error
-			$(cellSelectorContent).find("div.ui").popup('destroy');
+			$(cellSelectorContent).find(".field").popup('destroy');
 
 			if (data.hasFeedback === true) {
 				$(cellSelectorContent).find("i")
@@ -257,9 +175,9 @@ gridform.ui = gridform.ui || {};
 			}
 		}
 	};
-
+        
 	//String field type
-	gridform.types.string = $.extend({}, mastertype, {
+	gridform.types.string = $.extend({}, gridform.types.string, {
 
 			//render the field content
 			render : function (data, cellSelector, parent) {
@@ -288,58 +206,15 @@ gridform.ui = gridform.ui || {};
                 
 				return html;
 
-			},
-			//set the field content
-			set : function (data, value, cellSelector, parent) {
-
-				//Set the data in the input field
-				if (parent.settings.mode === "edit") {
-					$(cellSelector).find("input").val(value);
-				} else {
-					$(cellSelector).find("input").val(value);
-				}
-
-			},
-
-			setPlaceholder : function (data, value, cellSelector, parent) {
-				$(cellSelector).find("input").attr("placeholder", value);
-			},
-			//get the field content
-			get : function (data, cellSelector) {
-
-				return $(cellSelector).find("input").val();
-
-			},
-
-			//get the field, input, select, etc.
-			getFieldNode : function (field, cellSelector) {
-				return $(cellSelector).find("input");
-			},
-			//flush the field
-			flush : function (cellSelector, parent) {
-
-				$(cellSelector).find("input").val("");
-
-			},
-
-			enable : function (data, enable, cellSelector) {
-
-				//If readonly this is always disabled....
-				if (data.readonly === true)
-					return false;
-
-				if (enable === true) {
-					$(cellSelector).find("input").removeAttr("disabled");
-				} else if (enable === false) {
-					$(cellSelector).find("input").attr("disabled", "disabled");
-				}
-
 			}
+			
+		
+			
 
-		});
+		},mastertypeOverwrites);
 
 	//TEXTAREA
-	gridform.types.text = $.extend({}, mastertype, {
+	gridform.types.text = $.extend({}, gridform.types.text, {
 			//render the field content
 			render : function (data, cellSelector, parent) {
 
@@ -371,70 +246,18 @@ gridform.ui = gridform.ui || {};
 				return html;
 
 			},
-			//set the field content
-			set : function (data, value, cellSelector, parent) {
+			
 
-				//Set the data in the textarea
-				if (parent.settings.mode === "edit") {
-					$(cellSelector).find("textarea").val(value);
-				} else {
-					$(cellSelector).find("textarea").val(value);
-				}
+			
 
-			},
+		},mastertypeOverwrites);
 
-			setPlaceholder : function (data, value, cellSelector, parent) {
-				$(cellSelector).find("textarea").attr("placeholder", value);
-			},
-
-			//get the field content
-			get : function (data, cellSelector) {
-				return $(cellSelector).find("textarea").val();
-			},
-
-			//get the field, input, select, etc.
-			getFieldNode : function (field, cellSelector) {
-				return $(cellSelector).find("textarea");
-			},
-
-			//flush the field
-			flush : function (cellSelector, parent) {
-
-				$(cellSelector).find("textarea").val("");
-
-			},
-
-			enable : function (data, enable, cellSelector) {
-
-				//If readonly this is always disabled....
-				if (data.readonly === true)
-					return false;
-
-				if (enable === true) {
-					$(cellSelector).find("textarea").removeAttr("disabled");
-				} else if (enable === false) {
-					$(cellSelector).find("textarea").attr("disabled", "disabled");
-				}
-
-			},
-
-			afterDOMCreation : function (data, cellSelector, parent) {
-
-				//Get the textarea the full size of the td!
-				//Since HTML5 the rowspan and fill of a td is broken!
-				//Wait a little until the table layout is ready and the computation can be successfull :)
-				//BAD HACK!!! TODO!
-				setTimeout(function () {
-					var height = $(cellSelector).height();
-					$(cellSelector).find("div").height(height);
-
-				}, 50);
-			}
-
-		});
-
+        
+        
+    //Original-Funktion afterDOMCreation abspeichern!
+    origAfterDomCreation = gridform.types.select.afterDOMCreation;
 	//SELECT-LIST
-	gridform.types.select = $.extend({}, mastertype, {
+	gridform.types.select = $.extend({}, gridform.types.select, {
 			//render the field content
 			render : function (data, cellSelector, parent) {
 
@@ -442,120 +265,51 @@ gridform.ui = gridform.ui || {};
 				var disabled = (parent.settings.mode === "edit") ? '' : 'disabled';
 				var hasFeedback = (data.hasFeedback === true) ? 'has-feedback' : '';
 				var width = (data.width !== undefined) ? 'width:' + data.width : '';
-                				                                
+                				                                                              
                 var html = '<div class="ui form">';
                 
                 if (hasFeedback !== "") {
                     html += '<div class="ui mini field icon input">';
-                    html += '   <select style="'+ width +'" ' + disabled + '></select>';
+                    html += '   <select class="ui dropdown search" style="'+ width +'" ' + disabled + '></select>';
                     html += '       <i class="icon"></i>';
                 } else {
-                    html += '<div class="ui mini input">';
-                    html += '   <select style="'+ width +'" ' + disabled + '></select>';
+                    html += '<div class="ui mini field input ">';
+                    html += '   <select class="ui dropdown search" style="'+ width +'" ' + disabled + '></select>';
                 }
                 
                 html += '</div>';
                 html += '</div>';
 
 				return html;
-
 			},
-			//set the field value
-			set : function (data, value, cellSelector, parent) {
-
-				//Set the data in the textarea
-				if (parent.settings.mode === "edit") {
-					$(cellSelector).find("select").val(value);
-				} else {
-					$(cellSelector).find("select").val(value);
-				}
-
-			},
-
-			//get the field value
-			get : function (data, cellSelector) {
-				return $(cellSelector).find("select").val();
-			},
-
-			//get the field, input, select, etc.
-			getFieldNode : function (field, cellSelector) {
-				return $(cellSelector).find("select");
-			},
-
-			//flush the field
-			flush : function (cellSelector, parent) {
-
-				$(cellSelector).find("select").val("");
-
-			},
-
-			enable : function (data, enable, cellSelector) {
+            
+            enable : function (data, enable, cellSelector) {
 
 				//If readonly this is always disabled....
 				if (data.readonly === true)
 					return false;
 
 				if (enable === true) {
-					$(cellSelector).find("select").removeAttr("disabled");
+					$(cellSelector).find(".dropdown").removeClass("disabled");
 				} else if (enable === false) {
-					$(cellSelector).find("select").attr("disabled", "disabled");
+					$(cellSelector).find(".dropdown").addClass("disabled");
 				}
 
 			},
-
-			afterDOMCreation : function (data, cellSelector, parent) {
-
-                $(cellSelector).find(".ui.select").dropdown();
+                       
             
-				/*
-				 * internal function
-				 */
-				function fillDataInSelect(selection) {
-					var elem = $(cellSelector).find("select");
-					elem.html("");
-
-					//Placeholder without value
-					if (data.withoutPlaceholder !== true) {
-						elem.append('<option value="">' + parent.settings.language.selectPlaceholder + '</option>');
-					}
-
-					for (var x in selection) {
-						var selected = (data.selected == selection[x].key) ? 'selected' : '';
-						elem.append('<option ' + selected + ' value="' + selection[x].key + '">' + selection[x].value + '</option>');
-					}
-					//if the field was set to waiting...then reset the status
-					if ($(cellSelector).find("div.form-group").data("status") === "waiting") {
-						parent.resetFieldMarks(data.id);
-						if (parent.settings.mode === "edit") {
-							parent.enable(true, data.id);
-						}
-					}
-				};
-
-				if (data.selection === undefined)
-					return false;
-				if (typeof data.selection === "function") {
-					//Call the function and fill in the callback for filling data structure in the field
-					//Before set the field to waiting ... until it gets the data (maybe a async call to a backend ...)
-					parent.setWaiting(data.id);
-					var elem = $(cellSelector).find("select");
-					elem.append('<option value="" selected>' + parent.settings.language.loading + '</option>');
-
-					data.selection(fillDataInSelect);
-
-				} else if (typeof(data.selection) === "object") {
-					//The options are set in the options directly
-					fillDataInSelect(data.selection);
-				}
-                
-                
-
-			},
+            afterDOMCreation : function (data, cellSelector, parent){
+            
+                origAfterDomCreation(data, cellSelector, parent);
+               
+                $('select.dropdown').dropdown()
+            }
+			
             
 
-		});
+		},mastertypeOverwrites);
 
-	gridform.types.radio = $.extend({}, mastertype, {
+	gridform.types.radio = $.extend({}, gridform.types.radio, {
 			//render the field content
 			render : function (data, cellSelector, parent) {
 
@@ -565,9 +319,7 @@ gridform.ui = gridform.ui || {};
 				//Should font-Awesome be used?
 				var fontA = (parent.settings.useFontAwesome === true) ? 'fontA' : '';
 				//inline vs normal
-				var extraStyle = (data.inline === true) ? 'display:inline-block;padding-right:10px;' : '';
-
-                             
+				var extraStyle = (data.inline === true) ? 'display:inline-block;padding-right:10px;' : '';       
 				var html = '<div class="ui grouped field">';               
 
 				for (var x in data.selection) {                  
@@ -586,48 +338,7 @@ gridform.ui = gridform.ui || {};
 
 				return html;
 
-			},
-			//set the field value
-			set : function (data, value, cellSelector, parent) {
-				//Set chosen radio button
-				$(cellSelector).find("input[value=" + value + "]").prop("checked", true);
-
-			},
-
-			//get the field value
-			get : function (data, cellSelector) {
-				return $(cellSelector).find("input:checked").val();
-			},
-
-			//get the field, input, select, etc.
-			getFieldNode : function (field, cellSelector) {
-				return $(cellSelector).find("select");
-			},
-
-			//flush the field
-			flush : function (cellSelector, parent) {
-
-				$(cellSelector).find("input").prop("checked", false);
-
-			},
-
-			enable : function (data, enable, cellSelector) {
-
-				//If readonly this is always disabled....
-				if (data.readonly === true)
-					return false;
-
-				if (enable === true) {
-					$(cellSelector).find("input").removeAttr("disabled");
-					//set the label enabled too
-					$(cellSelector).find("label").removeClass("disabled");
-				} else if (enable === false) {
-					$(cellSelector).find("input").attr("disabled", "disabled");
-					//set the label enabled too
-					$(cellSelector).find("label").addClass("disabled");
-				}
-
-			},
+			},			
             
             afterDOMCreation : function (data, cellSelector, parent) {
                 
@@ -635,9 +346,9 @@ gridform.ui = gridform.ui || {};
             
             }
 
-		});
+		},mastertypeOverwrites);
 
-	gridform.types.checkbox = $.extend({}, mastertype, {
+	gridform.types.checkbox = $.extend({}, gridform.types.checkbox, {
 			//render the field content
 			render : function (data, cellSelector, parent) {
 
@@ -648,8 +359,6 @@ gridform.ui = gridform.ui || {};
 				var fontA = (parent.settings.useFontAwesome === true) ? 'fontA' : '';
 				//inline vs normal
 				var extraStyle = (data.inline === true) ? 'display:inline-block;padding-right:10px;' : '';
-
-                
         
                 var html = '<div class="ui grouped field">';               
 
@@ -670,70 +379,15 @@ gridform.ui = gridform.ui || {};
 				return html;
 
 			},
-			//set the field value
-			set : function (data, value, cellSelector, parent) {
+			
 
-				$(cellSelector).find("input").prop("checked", false);
-
-				if (typeof value === "object") {
-					for (var x in value) {
-						$(cellSelector).find("input[name=" + value[x] + "]").prop("checked", true);
-					}
-				} else {
-
-					$(cellSelector).find("input[name='" + value + "']").prop("checked", true);
-				}
-
-			},
-
-			//get the field value
-			get : function (data, cellSelector) {
-				var boxes = $(cellSelector).find("input:checked");
-				var data = [];
-				for (var x = 0; x < boxes.length; x++) {
-					data.push($(boxes[x]).val());
-				}
-				return data;
-			},
-
-			//get the field, input, select, etc.
-			getFieldNode : function (field, cellSelector) {
-				return $(cellSelector).find("select");
-			},
-
-			//flush the field
-			flush : function (cellSelector, parent) {
-
-				$(cellSelector).find("input").prop("checked", false);
-
-			},
-
-			enable : function (data, enable, cellSelector) {
-
-				//If readonly this is always disabled....
-				if (data.readonly === true)
-					return false;
-
-				if (enable === true) {
-					$(cellSelector).find("input").removeAttr("disabled");
-					//set the label enabled too
-					$(cellSelector).find("label").removeClass("disabled");
-				} else if (enable === false) {
-					$(cellSelector).find("input").attr("disabled", "disabled");
-					//set the label disabled too
-					$(cellSelector).find("label").addClass("disabled");
-
-				}
-
-			}
-
-		});
+		},mastertypeOverwrites);
 
 	/**
 	 * Boolean data type for the grid
 	 *
 	 */
-	gridform.types.boolean = $.extend({}, mastertype, {
+	gridform.types.boolean = $.extend({}, gridform.types.boolean, {
 			//render the field content
 			render : function (data, cellSelector, parent) {
 
@@ -757,91 +411,18 @@ gridform.ui = gridform.ui || {};
 				return html;
 
 			},
-			//set the field value
-			set : function (data, value, cellSelector, parent) {
+			
 
-				$(cellSelector).find("input").prop("checked", false);
-
-				if (value === true) {
-					$(cellSelector).find("input").prop("checked", true);
-				} else {
-					$(cellSelector).find("input").prop("checked", false);
-				}
-
-			},
-
-			//get the field value
-			get : function (data, cellSelector) {
-				var boxes = $(cellSelector).find("input:checked");
-				if (boxes.length > 0) {
-					return true;
-				} else {
-					return false;
-				}
-			},
-
-			//get the field, input, select, etc.
-			getFieldNode : function (field, cellSelector) {
-				return $(cellSelector).find("input");
-			},
-
-			//flush the field
-			flush : function (cellSelector, parent) {
-
-				$(cellSelector).find("input").prop("checked", false);
-
-			},
-
-			enable : function (data, enable, cellSelector) {
-
-				//If readonly this is always disabled....
-				if (data.readonly === true)
-					return false;
-
-				if (enable === true) {
-					$(cellSelector).find("input").removeAttr("disabled");
-				} else if (enable === false) {
-					$(cellSelector).find("input").attr("disabled", "disabled");
-				}
-
-			}
-
-		});
-
-	// Headline for a content area
-	gridform.types.headline = $.extend({}, mastertype, {
-
-			labelAllowed : false,
-			containsData : false,
-
-			//render the field content
-			render : function (data, cellSelector, parent) {
-				var html = '<div class="headline">' + data.label + '</div>';
-				return html;
-			}
-        });
-
-	// Separation line
-	gridform.types.separator = $.extend({}, mastertype, {
-
-			labelAllowed : false,
-			containsData : false,
-
-			//render the field content
-			render : function (data, cellSelector, parent) {
-				var html = '<div class="separator"></div>';
-				return html;
-			}
-		});
-
-	/**
-	 * Extend the built-in types
-	 *
-	 * @param type {String} Name of the type
-	 * @param object {Object} Complete object with all the field functions that are overwriting the existing ones in the mastertype
-	 */
-	gridform.addType = function (type, object) {
-		gridform.types[type] = $.extend({}, mastertype, object);
-	};
-
+		},mastertypeOverwrites);
+        
+    /** Overwrite at least the mastertype of other types */
+	gridform.types.iboolean = $.extend({}, gridform.types.iboolean, mastertypeOverwrites);
+	gridform.types.icheckbox = $.extend({}, gridform.types.icheckbox, mastertypeOverwrites);
+	gridform.types.iradio = $.extend({}, gridform.types.iradio, mastertypeOverwrites);
+    
+    /** Finaly overwrite the original mastertype here as well (so, that additional types can borrow things correctly, see method addType in jquery.gridfrom) */
+    gridform.types.__mastertype = $.extend(gridform.types.__mastertype, mastertypeOverwrites); 
+    
+      
+        
 }(jQuery));
