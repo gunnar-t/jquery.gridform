@@ -3,6 +3,8 @@ jquery.gridform
 ## Management summary
 JQuery-Plugin for creating complex forms (table-based) with usage of bootstrap and (optional) Font-Awesome.
 
+> This project is not maintained anymore. Sorry, other things going on in my life. 
+
 
 ## Introduction
 Why a new plugin for building html forms? Because I was tired of building (complex) forms by hand and needed
